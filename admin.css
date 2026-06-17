@@ -1,0 +1,105 @@
+/* Базовые стили страницы */
+body { font-family: sans-serif; background: #111; color: #fff; max-width: 800px; margin: 40px auto; padding: 20px; }
+h1, h2 { color: #c6a137; margin: 0; }
+form { background: #222; padding: 20px; border-radius: 8px; margin-bottom: 40px; }
+.form-group { margin-bottom: 15px; display: flex; flex-direction: column; }
+label { margin-bottom: 5px; color: #ccc; }
+input, select, textarea { padding: 10px; background: #333; border: 1px solid #444; color: #fff; border-radius: 4px; font-size: 14px; }
+.hint-text { color: #888; margin-top: 5px; display: block; }
+
+/* Кнопки и заголовки управления */
+.form-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; margin-top: 20px; }
+.btn-container { display: flex; gap: 10px; }
+button { background: #c6a137; color: #000; border: none; padding: 12px; cursor: pointer; font-weight: bold; border-radius: 4px; }
+button:hover { background: #e2ba43; }
+
+#createNewBtn { background: #28a745; color: white; padding: 8px 16px; font-size: 14px; }
+#createNewBtn:hover { background: #218838; }
+#cancelEditBtn { background: #555; color: #fff; }
+#cancelEditBtn:hover { background: #666; }
+
+/* Список блюд */
+.dish-list { display: grid; gap: 15px; }
+.dish-item { background: #222; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-radius: 4px; }
+.action-btns { display: flex; gap: 8px; }
+.edit-btn { background: #4a90e2; color: white; padding: 5px 10px; border-radius: 4px; border: none; cursor: pointer; }
+.edit-btn:hover { background: #357abd; }
+.delete-btn { background: #900; color: white; padding: 5px 10px; border-radius: 4px; border: none; cursor: pointer; }
+.delete-btn:hover { background: #c00; }
+
+/* Постфиксы числовых полей */
+.postfix-wrapper { position: relative; display: inline-block; width: 100%; }
+.postfix-wrapper input { width: 100%; padding-right: 65px; box-sizing: border-box; }
+.postfix-wrapper::after {
+    content: attr(data-postfix); position: absolute; right: 15px; top: 50%;
+    transform: translateY(-50%); color: #c6a137; font-weight: bold; font-size: 14px; pointer-events: none; user-select: none;
+}
+input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+input[type=number] {
+    -moz-appearance: textfield; /* Для старых версий Firefox */
+    appearance: textfield;      /* Стандартное свойство (Chrome, Safari, Edge, Firefox) */
+}
+#charCounter { font-size: 12px; transition: color 0.2s ease; }
+
+/* Медиаменеджер фотографий блюда */
+.media-manager-zone {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 10px;
+    background: #1a1a1a;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px dashed #444;
+}
+.photo-card {
+    position: relative;
+    width: 90px;
+    height: 90px;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 2px solid #333;
+}
+.photo-card img { width: 100%; height: 100%; object-fit: cover; }
+.photo-card .remove-badge {
+    position: absolute; top: 4px; right: 4px; background: rgba(255, 77, 77, 0.9);
+    color: white; border: none; border-radius: 50%; width: 22px; height: 22px;
+    font-size: 11px; cursor: pointer; display: flex; align-items: center;
+    justify-content: center; font-weight: bold; transition: background 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+.photo-card .remove-badge:hover { background: #ff1a1a; }
+
+/* Вкладки (Табы) */
+.tabs-nav { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 2px solid #333; padding-bottom: 12px; }
+.tab-btn { background: #222; color: #fff; border: 1px solid #444; padding: 10px 20px; cursor: pointer; font-weight: bold; border-radius: 4px; transition: 0.2s; }
+.tab-btn:hover { background: #333; }
+.tab-btn.active { background: #c6a137; color: #000; border-color: #c6a137; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Заявки на бронирование */
+.res-list { display: grid; gap: 15px; }
+.res-item { background: #222; padding: 20px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #fff; }
+.res-info h3 { margin: 0 0 8px 0; color: #fff; }
+.res-info p { margin: 4px 0; color: #ccc; font-size: 14px; }
+.res-meta { display: flex; gap: 15px; margin-top: 5px; font-weight: bold; color: #c6a137; }
+
+/* Цветовые статусы броней */
+.res-item.status-pending { border-left-color: #e2ba43; }
+.res-item.status-completed { border-left-color: #28a745; }
+.res-item.status-cancelled { border-left-color: #900; }
+.res-item.status-expired { border-left-color: #555; }
+
+.status-select { padding: 8px; background: #333; color: #fff; border: 1px solid #444; border-radius: 4px; font-weight: bold; cursor: pointer; }
+.status-select:focus { border-color: #c6a137; outline: none; }
+
+/* Панель фильтрации бронирований */
+.filters-panel {
+    background: #222; padding: 15px; border-radius: 6px; margin: 15px 0 25px 0;
+    display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-end; border: 1px solid #333;
+}
+.filter-group { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 150px; }
+.filter-group label { font-size: 12px; color: #aaa; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
+.clear-date-btn { background: #555; color: #fff; padding: 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
+.clear-date-btn:hover { background: #666; }

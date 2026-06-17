@@ -1,0 +1,530 @@
+[
+  {
+    "id": 1,
+    "category": "starters",
+    "name": "Брускетта со спелыми томатами",
+    "price": "550 ₽",
+    "weight": "180 г",
+    "calories": "290 ккал",
+    "desc": "Хрустящий багет на гриле, фермерские томаты, чеснок, свежий базилик и капли экстра-вирджин оливы.",
+    "img": "https://cdn.food.ru/unsigned/fit/640/480/ce/0/czM6Ly9tZWRpYS9waWN0dXJlcy8yMDIzMDkxNi9VV2lpaXcuanBlZw.jpg",
+    "gallery": [
+      "https://cdn.food.ru/unsigned/fit/640/480/ce/0/czM6Ly9tZWRpYS9waWN0dXJlcy8yMDIzMDkxNi80NjRVYjMuanBlZw.jpg"
+    ]
+  },
+  {
+    "id": 2,
+    "category": "starters",
+    "name": "Плато итальянских сыров",
+    "price": "997 ₽",
+    "weight": "250 г",
+    "calories": "540 ккал",
+    "desc": "Выдержанный пармезан, горгонзола долче, скаморца и мини-моцарелла. Подается с цветочным мёдом и грецкими орехами.",
+    "img": "https://i.pinimg.com/originals/78/7a/17/787a17703ef18342f3ac921f6325cd5f.jpg?nii=t",
+    "gallery": [
+      "https://i.pinimg.com/originals/78/7a/17/787a17703ef18342f3ac921f6325cd5f.jpg?nii=t",
+      "https://la-riva.ru/assets/images/products/2208/bb7e65b5b33b5df7b4d3f2b8055eb26a3e2ce81e.jpg"
+    ]
+  },
+  {
+    "id": 3,
+    "category": "starters",
+    "name": "Тартар из говядины с трюфелем",
+    "price": "980 ₽",
+    "weight": "160 г",
+    "calories": "380 ккал",
+    "desc": "Рубленая вырезка блэк ангус, каперсы, шалот, перепелиный желток и ароматное трюфельное масло. Подается с гренками.",
+    "img": "https://cdn.tveda.ru/thumbs/6d7/6d7b8019386b4e9b021966b5dc717554/c1380da71ef814ed0ad21fe2db442eba.jpg",
+    "gallery": [
+      "https://avatars.mds.yandex.net/i?id=15022aba268e7b1e14aaf7f8fee83cbb_l-5339386-images-thumbs&n=13"
+    ]
+  },
+  {
+    "id": 4,
+    "category": "starters",
+    "name": "Карпаччо из говядины с рукколой",
+    "price": "890 ₽",
+    "weight": "140 г",
+    "calories": "260 ккал",
+    "desc": "Тончайшие слайсы мраморной говядины, пикантная руккола, лепестки пармезана, каперсы и лимонно-оливковая заправка.",
+    "img": "https://avatars.mds.yandex.net/i?id=fc643c9d7cca035c64991789f30ba009_l-5669278-images-thumbs&n=13",
+    "gallery": [
+      "https://avatars.mds.yandex.net/i?id=fc643c9d7cca035c64991789f30ba009_l-5669278-images-thumbs&n=13",
+      "https://avatars.mds.yandex.net/i?id=16abe1cf212f3d570bdecac6b453ef8b_l-4599171-images-thumbs&n=13"
+    ]
+  },
+  {
+    "id": 5,
+    "category": "starters",
+    "name": "Брускетта с камчатским крабом",
+    "price": "1 120 ₽",
+    "weight": "170 г",
+    "calories": "310 ккал",
+    "desc": "Поджаренная чиабатта, мякоть камчатского краба, нежный авокадо-мусс и легкий соус айоли с соком лайма.",
+    "img": "https://avatars.mds.yandex.net/get-eda/3772831/c3f54ee368457b5d65f737c28362b1ee/1440x1082",
+    "gallery": [
+      "https://avatars.mds.yandex.net/get-eda/3772831/c3f54ee368457b5d65f737c28362b1ee/1440x1082"
+    ]
+  },
+  {
+    "id": 6,
+    "category": "starters",
+    "name": "Запеченный камамбер с инжиром",
+    "price": "790 ₽",
+    "weight": "200 г",
+    "calories": "490 ккал",
+    "desc": "Целая головка сыра камамбер, запеченная с розмарином и чесноком. Подается с густым инжирным джемом и гренками.",
+    "img": "https://voltmart.su/userfiles/2022/03_mart/original_1.jpg",
+    "gallery": [
+      "https://voltmart.su/userfiles/2022/03_mart/original_1.jpg",
+      "https://avatars.mds.yandex.net/i?id=69d5d55bbc3bf301b9b69f30335d619b7d545de8-5858852-images-thumbs&n=13"
+    ]
+  },
+  {
+    "id": 7,
+    "category": "starters",
+    "name": "Вителло Тоннато",
+    "price": "860 ₽",
+    "weight": "150 г",
+    "calories": "340 ккал",
+    "desc": "Нежная тонко нарезанная телятина под фирменным кремовым соусом из тунца, каперсов и анчоусов.",
+    "img": "https://avatars.mds.yandex.net/i?id=22ca53c7980da6cb4172670ec4fde624_l-16463578-images-thumbs&n=13",
+    "gallery": [
+      "https://avatars.mds.yandex.net/i?id=22ca53c7980da6cb4172670ec4fde624_l-16463578-images-thumbs&n=13"
+    ]
+  },
+  {
+    "id": 9,
+    "category": "starters",
+    "name": "Хрустящие баклажаны со сладким чили",
+    "price": "590 ₽",
+    "weight": "220 г",
+    "calories": "280 ккал",
+    "desc": "Обжаренные до золотистой корочки кубики баклажанов, свежие томаты, кинза и пикантный азиатский соус.",
+    "img": "https://avatars.mds.yandex.net/i?id=c1ef05e3ae57195734cecd0de35de325_l-10898378-images-thumbs&n=13",
+    "gallery": [
+      "https://avatars.mds.yandex.net/i?id=c1ef05e3ae57195734cecd0de35de325_l-10898378-images-thumbs&n=13",
+      "https://avatars.mds.yandex.net/i?id=899c65a8590d2c0dbf3dabe24d126506_l-5632212-images-thumbs&n=13"
+    ]
+  },
+  {
+    "id": 10,
+    "category": "salads",
+    "name": "Цезарь с тигровыми креветками",
+    "price": "890 ₽",
+    "weight": "250 г",
+    "calories": "410 ккал",
+    "desc": "Хрустящие листья романо, обжаренные креветки, крутоны из чиабатты, пармезан и фирменный заправочный соус.",
+    "img": "https://avatars.mds.yandex.net/i?id=7707ba2fd1c3bcf865a6ebae376fc162_l-5869150-images-thumbs&n=13",
+    "gallery": [
+      "https://avatars.mds.yandex.net/i?id=7707ba2fd1c3bcf865a6ebae376fc162_l-5869150-images-thumbs&n=13",
+      "https://static.tildacdn.com/stor6338-3266-4530-b865-373239626262/20798547.jpg"
+    ]
+  },
+  {
+    "id": 11,
+    "category": "salads",
+    "name": "Капрезе со страчателлой",
+    "price": "750 ₽",
+    "weight": "230 г",
+    "calories": "390 ккал",
+    "desc": "Сладкие томаты черри, нежная домашняя страчателла, руккола, кедровые орешки и густой соус песто.",
+    "img": "https://avatars.mds.yandex.net/i?id=5e14f2511bfb68dea02a104ad1785ded_l-4966461-images-thumbs&n=13",
+    "gallery": [
+      "https://avatars.mds.yandex.net/i?id=5e14f2511bfb68dea02a104ad1785ded_l-4966461-images-thumbs&n=13",
+      "https://avatars.mds.yandex.net/i?id=3e131648c6e618e009fb83e02448ab5d_l-8411743-images-thumbs&n=13",
+      "https://avatars.mds.yandex.net/i?id=248a41325256cf49894cfed16408fd9e7a686c98-12932370-images-thumbs&n=13"
+    ]
+  },
+  {
+    "id": 12,
+    "category": "salads",
+    "name": "Салат с печёной свеклой и козьим сыром",
+    "price": "680 ₽",
+    "weight": "210 г",
+    "calories": "310 ккал",
+    "desc": "Карамелизированная в меду свекла, мягкий козий сыр, микс салата, семена тыквы и бальзамический крем.",
+    "img": "https://avatars.mds.yandex.net/i?id=c0c1aabc2ae3996c97386537d0da55b4_l-4078534-images-thumbs&n=13",
+    "gallery": [
+      "https://avatars.mds.yandex.net/i?id=c0c1aabc2ae3996c97386537d0da55b4_l-4078534-images-thumbs&n=13",
+      "https://i.ytimg.com/vi/god3q-p6TH4/maxresdefault.jpg",
+      "https://avatars.mds.yandex.net/i?id=3234268e728db8f00bb1bfcfac67d3eb18e5757c-5669587-images-thumbs&n=13"
+    ]
+  },
+  {
+    "id": 13,
+    "category": "salads",
+    "name": "Салат с хрустящей уткой и манго",
+    "price": "840 ₽",
+    "weight": "200 г",
+    "calories": "360 ккал",
+    "desc": "Ломтики утиного филе в хрустящей панировке, спелое манго, микс-салат, ягоды черники и легкая имбирная заправка.",
+    "img": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=80",
+    "gallery": [
+      "https://images.unsplash.com/photo-1590846065576-961f65d665f8?w=500&q=80",
+      "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=500&q=80"
+    ]
+  },
+  {
+    "id": 14,
+    "category": "salads",
+    "name": "Тёплый салат с морепродуктами",
+    "price": "1 250 ₽",
+    "weight": "240 г",
+    "calories": "420 ккал",
+    "desc": "Обжаренные на гриле кальмары, гребешки и креветки, подаются на подушке из шпината с заправкой из цитрусового соуса.",
+    "img": "https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=500&q=80",
+    "gallery": [
+      "https://images.unsplash.com/photo-1599084993091-1cb5c0721cc6?w=500&q=80",
+      "https://images.unsplash.com/photo-1532347922423-2f1a26d4de37?w=500&q=80"
+    ]
+  },
+  {
+    "id": 15,
+    "category": "salads",
+    "name": "Салат с тунцом Блю и авокадо",
+    "price": "960 ₽",
+    "weight": "220 г",
+    "calories": "380 ккал",
+    "desc": "Слегка обожженный премиальный тунец, кубики свежего авокадо, огурец, перепелиные яйца и кунжутная заправка.",
+    "img": "https://images.unsplash.com/photo-1574484284002-952d92456975?w=500&q=80",
+    "gallery": [
+      "https://images.unsplash.com/photo-1534604973900-c43ab4c2e0ab?w=500&q=80",
+      "https://images.unsplash.com/photo-1600336153372-628d0b2b8004?w=500&q=80"
+    ]
+  },
+  {
+    "id": 16,
+    "category": "salads",
+    "name": "Греческий салат с сыром Фета",
+    "price": "620 ₽",
+    "weight": "280 г",
+    "calories": "290 ккал",
+    "desc": "Крупно нарезанные огурцы, томаты, сладкий перец, каперсы, крымский лук, сыр фета и оригинальное греческое масло.",
+    "img": "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=500&q=80",
+    "gallery": [
+      "https://images.unsplash.com/photo-1623428187969-5da2dced5ebf?w=500&q=80",
+      "https://images.unsplash.com/photo-1582235477045-8f654b036c64?w=500&q=80"
+    ]
+  },
+  {
+    "id": 17,
+    "category": "salads",
+    "name": "Зеленый салат с брокколи и эдамаме",
+    "price": "580 ₽",
+    "weight": "190 г",
+    "calories": "210 ккал",
+    "desc": "Суперфуд-микс: свежие цукини, бобы эдамаме, брокколи аль-денте, авокадо, семена конопли и мятно-лаймовый соус.",
+    "img": "https://images.unsplash.com/photo-1623428187969-5da2dced5ebf?w=500&q=80",
+    "gallery": [
+      "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=500&q=80",
+      "https://images.unsplash.com/photo-1541014741259-df5290ce5027?w=500&q=80"
+    ]
+  },
+  {
+    "id": 18,
+    "category": "mains",
+    "name": "Стейк Рибай с овощами гриль",
+    "price": "2 950 ₽",
+    "weight": "350/150 г",
+    "calories": "720 ккал",
+    "desc": "Мраморная говядина зернового откорма, обжаренная на гриле с розмарином. Подается с перечным соусом.",
+    "img": "https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=500&q=80",
+    "gallery": [
+      "https://images.unsplash.com/photo-1558030006-450675393462?w=500&q=80",
+      "https://images.unsplash.com/photo-1544025162-d76694265947?w=500&q=80"
+    ]
+  },
+  {
+    "id": 20,
+    "category": "mains",
+    "name": "Ризотто с белыми грибами",
+    "price": "920 ₽",
+    "weight": "280 г",
+    "calories": "480 ккал",
+    "desc": "Итальянский рис арборио, белые грибы, портобелло, пармезан, капля трюфельного масла и свежая петрушка.",
+    "img": "https://images.unsplash.com/photo-1476124369491-e7addf5db371?w=500&q=80",
+    "gallery": [
+      "https://images.unsplash.com/photo-1587314168485-3236d6710814?w=500&q=80",
+      "https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=500&q=80"
+    ]
+  },
+  {
+    "id": 21,
+    "category": "mains",
+    "name": "Филе лосося со спаржей",
+    "price": "1 650 ₽",
+    "weight": "160/100 г",
+    "calories": "430 ккал",
+    "desc": "Нежное филе лосося су-ви, припущенная спаржа, сливочно-икорный соус и долька обожженного лимона.",
+    "img": "https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=500&q=80",
+    "gallery": [
+      "https://images.unsplash.com/photo-1534604973900-c43ab4c2e0ab?w=500&q=80",
+      "https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=500&q=80"
+    ]
+  },
+  {
+    "id": 22,
+    "category": "mains",
+    "name": "Утиная ножка конфи",
+    "price": "1 150 ₽",
+    "weight": "180/120 г",
+    "calories": "590 ккал",
+    "desc": "Классическое французское блюдо: нежная утиная ножка медленного томления, подается с муссом из батата и брусничным соусом.",
+    "img": "https://images.unsplash.com/photo-1514516345957-556ca7d90a29?w=500&q=80",
+    "gallery": [
+      "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=80",
+      "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=500&q=80"
+    ]
+  },
+  {
+    "id": 23,
+    "category": "mains",
+    "name": "Стейк из тунца с гуакамоле",
+    "price": "1 380 ₽",
+    "weight": "150/80 г",
+    "calories": "310 ккал",
+    "desc": "Стейк тунца прожарки Medium Rare, подается на подушке из нежного домашнего гуакамоле со свежими томатами конкассе.",
+    "img": "https://images.unsplash.com/photo-1534604973900-c43ab4c2e0ab?w=500&q=80",
+    "gallery": [
+      "https://images.unsplash.com/photo-1574484284002-952d92456975?w=500&q=80",
+      "https://images.unsplash.com/photo-1532347922423-2f1a26d4de37?w=500&q=80"
+    ]
+  },
+  {
+    "id": 24,
+    "category": "mains",
+    "name": "Спагетти Карбонара с гуанчале",
+    "price": "720 ₽",
+    "weight": "300 г",
+    "calories": "680 ккал",
+    "desc": "Римская классика: паста, вяленая свиная щека (гуанчале), желток фермерского яйца, сыр пекорино романо, черный перец.",
+    "img": "https://images.unsplash.com/photo-1612874742237-6526221588e3?w=500&q=80",
+    "gallery": [
+      "https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=500&q=80",
+      "https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=500&q=80"
+    ]
+  },
+  {
+    "id": 25,
+    "category": "mains",
+    "name": "Тальятелле с говяжьими щечками",
+    "price": "890 ₽",
+    "weight": "340 г",
+    "calories": "610 ккал",
+    "desc": "Домашняя широкая паста с нежнейшими волокнами говяжьих щек, томленых в красном вине со специями в течение 12 часов.",
+    "img": "https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=500&q=80",
+    "gallery": [
+      "https://images.unsplash.com/photo-1612874742237-6526221588e3?w=500&q=80",
+      "https://images.unsplash.com/photo-1603360946369-dc9bb6258143?w=500&q=80"
+    ]
+  },
+  {
+    "id": 26,
+    "category": "mains",
+    "name": "Равиоли со шпинатом и рикоттой",
+    "price": "690 ₽",
+    "weight": "230 г",
+    "calories": "420 ккал",
+    "desc": "Тонкое тесто, начинка из молодой рикотты и шпината. Подается в эмульсии из сливочного масла, шалфея и пармезана.",
+    "img": "https://images.unsplash.com/photo-1587314168485-3236d6710814?w=500&q=80",
+    "gallery": [
+      "https://images.unsplash.com/photo-1476124369491-e7addf5db371?w=500&q=80",
+      "https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=500&q=80"
+    ]
+  },
+  {
+    "id": 27,
+    "category": "mains",
+    "name": "Томлёное плечо ягнёнка с кускусом",
+    "price": "1 420 ₽",
+    "weight": "250/150 г",
+    "calories": "690 ккал",
+    "desc": "Мясо ягненка, отделяющееся от кости, подается с рассыпчатым ароматным кускусом, зеленью и восточными специями.",
+    "img": "https://images.unsplash.com/photo-1603360946369-dc9bb6258143?w=500&q=80",
+    "gallery": [
+      "https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=500&q=80",
+      "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=500&q=80"
+    ]
+  },
+  {
+    "id": 28,
+    "category": "mains",
+    "name": "Цыпленок с трюфельным пюре",
+    "price": "840 ₽",
+    "weight": "220/150 г",
+    "calories": "510 ккал",
+    "desc": "Половинка фермерского цыпленка су-вид, доведенная на гриле до хрустящей корочки. Подается с нежным картофельным пюре.",
+    "img": "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=500&q=80",
+    "gallery": [
+      "https://images.unsplash.com/photo-1514516345957-556ca7d90a29?w=500&q=80",
+      "https://images.unsplash.com/photo-1558030006-450675393462?w=500&q=80"
+    ]
+  },
+  {
+    "id": 29,
+    "category": "mains",
+    "name": "Стейк Филе-Миньон",
+    "price": "2 450 ₽",
+    "weight": "200/50 г",
+    "calories": "480 ккал",
+    "desc": "Самая нежная центральная часть говяжей вырезки. Рекомендуемая прожарка Medium. Подается с соусом Порто на красном вине.",
+    "img": "https://images.unsplash.com/photo-1558030006-450675393462?w=500&q=80",
+    "gallery": [
+      "https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=500&q=80",
+      "https://images.unsplash.com/photo-1544025162-d76694265947?w=500&q=80"
+    ]
+  },
+  {
+    "id": 30,
+    "category": "mains",
+    "name": "Пицца Маргарита классическая",
+    "price": "590 ₽",
+    "weight": "380 г",
+    "calories": "790 ккал",
+    "desc": "Традиционное неаполитанское тесто, фирменный соус из томатов пелати, моцарелла фиор ди латте, листики свежего базилика.",
+    "img": "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&q=80",
+    "gallery": [
+      "https://images.unsplash.com/photo-1573821663912-569905455b1c?w=500&q=80",
+      "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=500&q=80"
+    ]
+  },
+  {
+    "id": 31,
+    "category": "mains",
+    "name": "Пицца Горгонзола с грушей",
+    "price": "780 ₽",
+    "weight": "410 г",
+    "calories": "840 ккал",
+    "desc": "Белая пицца со сливочной основой, пикантным сыром горгонзола, тонкими слайсами спелой груши и каплями гречишного мёда.",
+    "img": "https://images.unsplash.com/photo-1573821663912-569905455b1c?w=500&q=80",
+    "gallery": [
+      "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&q=80",
+      "https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=500&q=80"
+    ]
+  },
+  {
+    "id": 32,
+    "category": "desserts",
+    "name": "Чизкейк Сан-Себастьян",
+    "price": "650 ₽",
+    "weight": "160 г",
+    "calories": "460 ккал",
+    "desc": "Знаменитый обожженный баскский чизкейк с нежнейшей кремовой текстурой внутри. Подается с ягодным кули.",
+    "img": "https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=500&q=80",
+    "gallery": [
+      "https://images.unsplash.com/photo-1488477181946-6428a0291777?w=500&q=80",
+      "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=500&q=80"
+    ]
+  },
+  {
+    "id": 33,
+    "category": "desserts",
+    "name": "Домашний Тирамису",
+    "price": "580 ₽",
+    "weight": "150 г",
+    "calories": "390 ккал",
+    "desc": "Воздушный крем на основе маскарпоне, печенье савоярди, пропитанное крепким эспрессо и сиропом амаретто.",
+    "img": "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=500&q=80",
+    "gallery": [
+      "https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=500&q=80",
+      "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=500&q=80"
+    ]
+  },
+  {
+    "id": 34,
+    "category": "desserts",
+    "name": "Шоколадный фондан",
+    "price": "490 ₽",
+    "weight": "120/40 г",
+    "calories": "410 ккал",
+    "desc": "Горячий десерт с хрустящей корочкой и жидкой шоколадной лавой внутри. Подается с шариком ванильного джелато.",
+    "img": "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=500&q=80",
+    "gallery": [
+      "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=500&q=80",
+      "https://images.unsplash.com/photo-1488477181946-6428a0291777?w=500&q=80"
+    ]
+  },
+  {
+    "id": 35,
+    "category": "desserts",
+    "name": "Нежная Панна-Котта",
+    "price": "420 ₽",
+    "weight": "140 г",
+    "calories": "280 ккал",
+    "desc": "Сливочно-ванильный североитальянский десерт из сливок и желатина, покрытый сочным пюре из спелого манго и маракуйи.",
+    "img": "https://images.unsplash.com/photo-1488477181946-6428a0291777?w=500&q=80",
+    "gallery": [
+      "https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=500&q=80",
+      "https://images.unsplash.com/photo-1511018556340-d16986a1c194?w=500&q=80"
+    ]
+  },
+  {
+    "id": 36,
+    "category": "desserts",
+    "name": "Пьяная груша в вине",
+    "price": "540 ₽",
+    "weight": "180/30 г",
+    "calories": "240 ккал",
+    "desc": "Груша, томленая в сухом красном вине с палочкой корицы, бадьяном и цедрой. Подается с шариком мороженого.",
+    "img": "https://images.unsplash.com/photo-1511018556340-d16986a1c194?w=500&q=80",
+    "gallery": [
+      "https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=500&q=80",
+      "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=500&q=80"
+    ]
+  },
+  {
+    "id": 37,
+    "category": "desserts",
+    "name": "Фирменный мильфей с ягодами",
+    "price": "690 ₽",
+    "weight": "160 г",
+    "calories": "380 ккал",
+    "desc": "Слои тончайшего хрустящего слоеного теста, прослоенные легким кремом патисьер и обилием свежих ягод малины и голубики.",
+    "img": "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=500&q=80",
+    "gallery": [
+      "https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=500&q=80",
+      "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=500&q=80"
+    ]
+  },
+  {
+    "id": 38,
+    "category": "desserts",
+    "name": "Итальянское джелато (3 шарика)",
+    "price": "380 ₽",
+    "weight": "120 г",
+    "calories": "190 ккал",
+    "desc": "Три шарика крафтового мороженого на выбор: классическая ваниль, бельгийский шоколад, сицилийская фисташка.",
+    "img": "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=500&q=80",
+    "gallery": [
+      "https://images.unsplash.com/photo-1488477181946-6428a0291777?w=500&q=80",
+      "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=500&q=80"
+    ]
+  },
+  {
+    "id": 1781698505962,
+    "category": "starters",
+    "name": "dfsdfsdfs",
+    "price": "2222",
+    "weight": "222",
+    "calories": "333",
+    "desc": "asdasd",
+    "img": "/uploads/1781698505951-Ð ÐµÐºÐ»Ð°Ð¼Ð°1.jpg",
+    "gallery": [
+      "/uploads/1781698505957-register.jpg"
+    ]
+  },
+  {
+    "id": 1781705278218,
+    "category": "starters",
+    "name": "das",
+    "price": "12 ₽",
+    "weight": "123 г",
+    "calories": "123 ккал",
+    "desc": "123",
+    "img": "/uploads/1781705278204-5c667b51332990f7af3d3b20b4548883.jpeg",
+    "gallery": [
+      "/uploads/1781705278216-5c667b51332990f7af3d3b20b4548883.jpeg"
+    ]
+  }
+]

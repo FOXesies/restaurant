@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Меню и Акции — Belka Vilka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav id="navbar">
+    <a href="index.html" class="logo-link" style="text-decoration: none; color: inherit;">
+        <div class="nav-logo">
+            <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="16" cy="16" r="15" stroke="#c6a137" stroke-width="1"/>
+                <path d="M10 10 Q16 6 22 10 Q26 16 22 22 Q16 26 10 22 Q6 16 10 10Z" stroke="#c6a137" stroke-width=".8" fill="none"/>
+                <path d="M13 16 Q16 11 19 16 Q16 21 13 16Z" fill="#c6a137" opacity=".6"/>
+            </svg>
+            <div>
+                <div>Belka Vilka</div>
+                <span>Restaurant</span>
+            </div>
+        </div>
+    </a>
+    <ul class="nav-links">
+        <li><a href="index.html#about">О нас</a></li>
+        <li><a href="menu.html#promotions">Акции</a></li>
+        <li><a href="menu.html#menu">Меню</a></li>
+        <li><a href="gallery.html">Галерея</a></li>
+        <li><a href="index.html#contacts">Контакты</a></li>
+    </ul>
+    <button class="nav-cta" type="button" onclick="openModal()">Забронировать столик</button>
+    <button class="burger" id="burgerBtn" aria-label="Открыть меню">
+        <span></span><span></span><span></span>
+    </button>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+    <a href="index.html#about">О нас</a>
+    <a href="menu.html#promotions">Акции</a>
+    <a href="menu.html#menu">Меню</a>
+    <a href="gallery.html">Галерея</a>
+    <a href="index.html#contacts">Контакты</a>
+    <button class="btn-primary" onclick="closeMobile();openModal()">Забронировать столик</button>
+</div>
+
+<section class="page-header">
+    <div class="header-overlay"></div>
+    <div class="header-title">
+        <h1>Гастрономическая карта</h1>
+        <p>Изысканные сочетания вкусов, созданные для ценителей прекрасного</p>
+    </div>
+</section>
+
+<section id="promotions" class="page-section">
+    <div class="section-title reveal">
+        <h2>Специальные предложения</h2>
+        <div class="ornament"><div class="ornament-line"></div>✦<div class="ornament-line"></div></div>
+    </div>
+    <div class="promo-grid">
+        <div class="promo-card reveal">
+            <div class="promo-tag">Каждый понедельник</div>
+            <h3>Винный вечер</h3>
+            <p>Скидка 20% на все бутылки из нашей премиальной винной карты при заказе мясного сета.</p>
+        </div>
+        <div class="promo-card reveal">
+            <div class="promo-tag">С 12:00 до 16:00</div>
+            <h3>Итальянский ланч</h3>
+            <p>Специальный сет-меню от шефа (салат, суп и паста на выбор) за фиксированные 1 150 ₽.</p>
+        </div>
+    </div>
+</section>
+
+<section id="menu" class="page-section">
+    <div class="section-title reveal">
+        <h2>Основное Меню</h2>
+        <div class="ornament"><div class="ornament-line"></div>✦<div class="ornament-line"></div></div>
+    </div>
+    <div class="menu-tabs">
+        <button class="tab active" onclick="filterMenu('all', this)">Все</button>
+        <button class="tab" onclick="filterMenu('starters', this)">Закуски</button>
+        <button class="tab" onclick="filterMenu('salads', this)">Салаты</button>
+        <button class="tab" onclick="filterMenu('mains', this)">Горячее</button>
+    </div>
+    <div class="menu-items" id="menuItems">
+        </div>
+</section>
+
+<footer>
+    <div>© 2026 Belka Vilka Restaurant. Все права защищены.</div>
+    <div>
+        <a href="index.html#about">О нас</a> &nbsp;·&nbsp;
+        <a href="menu.html">Меню</a> &nbsp;·&nbsp;
+        <a href="index.html#contacts">Контакты</a>
+    </div>
+</footer>
+
+<div class="modal-overlay" id="modalOverlay" onclick="maybeClose(event)">
+    <div class="modal">
+        <button class="modal-close" type="button" onclick="closeModal()">×</button>
+        <h3>Бронирование столика</h3>
+        <form id="modalBookingForm" novalidate>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Дата</label>
+                    <input type="date" id="mDate" name="date">
+                </div>
+                <div class="form-group">
+                    <label>Время</label>
+                    <input type="time" id="mTime" name="time" value="19:00">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Кол-во гостей</label>
+                <select name="guests">
+                    <option>1 гость</option>
+                    <option selected>2 гостя</option>
+                    <option>3 гостя</option>
+                    <option>4 гостя</option>
+                    <option>5+ гостей</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Имя</label>
+                <input type="text" name="name" placeholder="Ваше имя">
+            </div>
+            <div class="form-group">
+                <label>Телефон</label>
+                <input type="tel" name="phone" placeholder="+7 (___) ___-__-__">
+            </div>
+            <div class="form-group">
+                <label>Комментарий</label>
+                <textarea name="comment" placeholder="Особые пожелания..."></textarea>
+            </div>
+            <button class="btn-submit" type="submit">Забронировать</button>
+            <p class="form-note">Мы свяжемся с вами для подтверждения</p>
+        </form>
+    </div>
+</div>
+
+<div id="dish-modal" class="modal-overlay">
+    <div class="modal-content">
+        <button id="close-modal-btn" class="modal-close">&times;</button>
+        <div id="modal-body">
+            </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель управления — Belka Vilka</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body class="admin-body">
+
+    <h1>Панель управления Belka Vilka</h1>
+    
+    <div class="tabs-nav">
+        <button class="tab-btn active" onclick="switchTab('menu-tab')">🍔 Управление меню</button>
+        <button class="tab-btn" onclick="switchTab('reservations-tab')">📅 Заявки на бронь</button>
+    </div>
+
+    <div id="menu-tab" class="tab-content active">
+        <div class="form-header">
+            <h2 id="formTitle">Добавить новое блюдо</h2>
+            <button type="button" id="createNewBtn" style="display: none;">+ Создать новую позицию</button>
+        </div>
+        
+        <form id="addDishForm" enctype="multipart/form-data">
+            <input type="hidden" name="id" id="dishIdInput">
+
+            <div class="form-group">
+                <label>Категория</label>
+                <select name="category" required>
+                    <option value="starters">Закуски (starters)</option>
+                    <option value="salads">Салаты (salads)</option>
+                    <option value="mains">Горячее (mains)</option>
+                    <option value="desserts">Десерты (desserts)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Название</label>
+                <input type="text" name="name" id="dishNameInput" required maxlength="50" placeholder="Например, Салат Цезарь">
+                <small id="charCounter" class="hint-text">0 / 50 символов</small>
+            </div>
+
+            <div class="form-group">
+                <label>Цена</label>
+                <div class="postfix-wrapper" data-postfix="₽">
+                    <input type="number" name="price" required min="1" placeholder="550">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Вес</label>
+                <div class="postfix-wrapper" data-postfix="г">
+                    <input type="number" name="weight" required min="1" placeholder="180">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Калории</label>
+                <div class="postfix-wrapper" data-postfix="ккал">
+                    <input type="number" name="calories" required min="0" placeholder="290">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Описание</label>
+                <textarea name="desc" rows="3" required placeholder="Опишите состав..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label id="mainImgLabel">Главное превью (1 photo)</label>
+                <div id="mainPhotoManager" class="media-manager-zone" style="display: none;"></div>
+                <input type="file" name="img" accept="image/*" required>
+            </div>
+
+            <div class="form-group">
+                <label>Галерея для слайдера (всего до 4-х фото)</label>
+                <div id="galleryManager" class="media-manager-zone" style="display: none;"></div>
+                <input type="file" name="gallery" accept="image/*" multiple>
+                <small class="hint-text">Выбранные файлы добавятся к тем, что остались в блоке выше.</small>
+            </div>
+            
+            <div class="btn-container">
+                <button type="submit" id="submitBtn">Сохранить блюдо в меню</button>
+                <button type="button" id="cancelEditBtn" style="display: none;">Отмена</button>
+            </div>
+        </form>
+
+        <h2>Текущее меню</h2>
+        <div class="dish-list" id="adminMenuContainer"></div>
+    </div>
+
+    <div id="reservations-tab" class="tab-content">
+        <h2>Список заявок на бронирование</h2>
+        
+        <div class="filters-panel">
+            <div class="filter-group">
+                <label>Статус</label>
+                <select id="filterStatus" onchange="applyReservationsFilters()">
+                    <option value="all">🌍 Все статусы</option>
+                    <option value="ожидает ответа">⏳ Ожидает ответа</option>
+                    <option value="завершена">✅ Завершена</option>
+                    <option value="отменена">❌ Отменена</option>
+                    <option value="просрочена">💀 Просрочена</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>Дата брони</label>
+                <div style="display: flex; gap: 5px;">
+                    <input type="date" id="filterDate" onchange="applyReservationsFilters()" style="flex: 1;">
+                    <button type="button" class="clear-date-btn" onclick="clearFilterDate()" title="Сбросить дату">✕</button>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <label>Время заказа</label>
+                <select id="filterSort" onchange="applyReservationsFilters()">
+                    <option value="desc">⬇️ Сначала новые (по убыванию)</option>
+                    <option value="asc">⬆️ Сначала старые (по возрастанию)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="res-list" id="adminReservationsContainer"></div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
