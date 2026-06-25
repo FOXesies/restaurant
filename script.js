@@ -1,13 +1,31 @@
-let menuData = []; // Теперь это пустой массив, который заполнится из JSON
+let menuData = []; // Массив, который заполнится из JSON с сервера
+let globalSpecialOffersIds = []; // Массив для ID спец. предложений
 
-// Функция для загрузки данных из внешнего JSON-файла
+// Функция для загрузки списка спец. предложений с сервера
+async function loadSpecialOffersIds() {
+    try {
+        const response = await fetch('/api/special-offers');
+        if (response.ok) {
+            globalSpecialOffersIds = await response.json();
+        }
+    } catch (err) {
+        console.error('Ошибка загрузки спец. предложений:', err);
+    }
+}
+
+// Функция для загрузки данных меню
 async function loadMenuData() {
     try {
+        // 1. Сначала дожидаемся загрузки ID всех спец. предложений
+        await loadSpecialOffersIds();
+
+        // 2. Затем загружаем основное меню, как и раньше
         const response = await fetch('/api/menu');
         if (!response.ok) {
             throw new Error(`Ошибка сети: ${response.status}`);
         }
         menuData = await response.json();
+        
     } catch (error) {
         console.error("Не удалось загрузить меню:", error);
         if (menuItemsContainer) {
@@ -28,67 +46,79 @@ const menuItemsContainer = document.getElementById('menuItems');
 const videoButton = document.getElementById('videoBtn');
 const modalBookingForm = document.getElementById('modalBookingForm');
 
-// ─── ИНТЕРАКТИВНОЕ МЕНЮ (Только для страницы menu.html) ───
-function renderMenu(filter) {
-    if (!menuItemsContainer || menuData.length === 0) return;
-    
-    const items = filter === 'all' ? menuData : menuData.filter((item) => item.category === filter);
-
-    menuItemsContainer.innerHTML = items.map((item) => `
-        <div class="menu-item" onclick="openDishModal('${item.id}')" style="cursor: pointer;">
-            <img src="${item.img}" alt="${item.name}">
-            <div class="menu-item-info">
-                <h4>${item.name}</h4>
-                <div class="menu-item-meta" style="font-size: 0.85rem; color: #888; margin-bottom: 4px;">
-                    ${item.weight ? `<span>${item.weight}</span>` : ''} 
-                    ${item.calories ? `&nbsp;·&nbsp;<span>${item.calories}</span>` : ''}
-                </div>
-                <p>${item.desc}</p>
-            </div>
-            <div class="menu-item-price">${item.price}</div>
-        </div>
-    `).join('');
-}
-
-// Находим элементы нового модального окна блюда
+// Находим элементы модального окна детального просмотра блюда
 const dishModal = document.getElementById('dish-modal');
 const dishModalBody = document.getElementById('modal-body');
 const closeDishModalBtn = document.getElementById('close-modal-btn');
 
-// Функция открытия окна блюда
+// Состояние слайдера картинок внутри модального окна блюда
 window.currentDishImages = [];
 window.currentDishImgIndex = 0;
 
+// ─── ИНТЕРАКТИВНОЕ МЕНЮ (Только для страницы menu.html) ───
+function renderMenu(filter) {
+    if (!menuItemsContainer || menuData.length === 0) return;
+    
+    let items = [];
+    if (filter === 'all') {
+        items = menuData;
+    } else if (filter === 'seasonal') { 
+        // Перехватываем фильтр 'seasonal' и сопоставляем с ID из вашей таблицы special_offers
+        items = menuData.filter(item => globalSpecialOffersIds.includes(item.id) || globalSpecialOffersIds.includes(Number(item.id)));
+    } else {
+        items = menuData.filter((item) => item.category === filter);
+    }
+
+    menuItemsContainer.innerHTML = items.map((item) => {
+        // Проверяем, входит ли блюдо в список специальных/сезонных предложений
+        const isSeasonal = globalSpecialOffersIds.includes(item.id) || globalSpecialOffersIds.includes(Number(item.id));
+        
+        return `
+            <div class="menu-item" onclick="openDishModal('${item.id}')" style="cursor: pointer; position: relative;">
+                ${isSeasonal ? '<span class="special-badge" style="position: absolute; top: 10px; right: 10px; background: #c6a137; color: #000; padding: 4px 8px; font-size: 0.75rem; font-weight: bold; border-radius: 4px; z-index: 2;">🍁 Сезон</span>' : ''}
+                <img src="${item.img}" alt="${item.name}">
+                <div class="menu-item-info">
+                    <h4>${item.name}</h4>
+                    <div class="menu-item-meta" style="font-size: 0.85rem; color: #888; margin-bottom: 4px;">
+                        ${item.weight ? `<span>${item.weight} г</span>` : ''} 
+                        ${item.calories ? `&nbsp;·&nbsp;<span>${item.calories} ккал</span>` : ''}
+                    </div>
+                    <p>${item.desc}</p>
+                </div>
+                <div class="menu-item-price">${item.price} ₽</div>
+            </div>
+        `;
+    }).join('');
+}
+
 // Функция открытия окна блюда с поддержкой слайдера
 function openDishModal(id) {
-    const dish = menuData.find(item => item.id === id || String(item.id) === String(id));
+    const dish = menuData.find(item => String(item.id) === String(id));
     if (!dish || !dishModal || !dishModalBody) return;
 
-    // Смело берем массив картинок или создаем его из одной дефолтной
     window.currentDishImages = dish.gallery && dish.gallery.length > 0 ? dish.gallery : [dish.img];
-    window.currentDishImgIndex = 0; // Сбрасываем индекс на первую картинку
+    window.currentDishImgIndex = 0; 
 
-    // Генерируем верстку внутри окна
     dishModalBody.innerHTML = `
         <div class="dish-detailed">
             <div class="dish-detailed-gallery">
-                <div class="dish-main-img-container">
+                <div class="dish-main-img-container" style="position: relative;">
                     <img src="${window.currentDishImages[0]}" alt="${dish.name}" id="dishMainImg" class="dish-gallery-img">
                     
                     ${window.currentDishImages.length > 1 ? `
-                      <button class="slider-arrow prev-arrow" onclick="switchDishImg(-1)" type="button" aria-label="Предыдущее фото">
+                      <button class="slider-arrow prev-arrow" onclick="switchDishImg(-1)" type="button" aria-label="Предыдущее foto" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: #fff; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
                           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
                       </button>
-                      <button class="slider-arrow next-arrow" onclick="switchDishImg(1)" type="button" aria-label="Следующее фото">
+                      <button class="slider-arrow next-arrow" onclick="switchDishImg(1)" type="button" aria-label="Следующее foto" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: #fff; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
                           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
                       </button>
                     ` : ''}
                 </div>
                 
                 ${window.currentDishImages.length > 1 ? `
-                    <div class="dish-thumbnails">
+                    <div class="dish-thumbnails" style="display: flex; gap: 8px; margin-top: 10px; overflow-x: auto;">
                         ${window.currentDishImages.map((imgUrl, idx) => `
-                            <img src="${imgUrl}" alt="" class="thumb-img ${idx === 0 ? 'active' : ''}" onclick="jumpToDishImg(${idx})">
+                            <img src="${imgUrl}" alt="" class="thumb-img ${idx === 0 ? 'active' : ''}" onclick="jumpToDishImg(${idx})" style="width: 60px; height: 45px; object-fit: cover; cursor: pointer; border-radius: 4px; border: 2px solid transparent;">
                         `).join('')}
                     </div>
                 ` : ''}
@@ -97,20 +127,21 @@ function openDishModal(id) {
             <div class="dish-detailed-info">
                 <div>
                     <h3>${dish.name}</h3>
-                    <div class="dish-detailed-meta">
-                        ${dish.weight ? `<span>${dish.weight}</span>` : ''}
-                        ${dish.calories ? `<span>&nbsp;·&nbsp;${dish.calories}</span>` : ''}
+                    <div class="dish-detailed-meta" style="color: #888; font-size: 0.9rem; margin-bottom: 12px;">
+                        ${dish.weight ? `<span>${dish.weight} г</span>` : ''}
+                        ${dish.calories ? `<span>&nbsp;·&nbsp;${dish.calories} ккал</span>` : ''}
                     </div>
                     <p class="dish-detailed-desc">${dish.desc}</p>
                 </div>
-                <div class="dish-detailed-footer">
-                    <span class="dish-detailed-price">${dish.price}</span>
+                <div class="dish-detailed-footer" style="margin-top: 20px; font-size: 1.4rem; font-weight: bold; color: #c6a137;">
+                    <span class="dish-detailed-price">${dish.price} ₽</span>
                 </div>
             </div>
         </div>
     `;
 
     dishModal.classList.add('open');
+    dishModal.classList.remove('hidden');
     document.body.classList.add('modal-open');
 }
 
@@ -120,7 +151,6 @@ function switchDishImg(direction) {
     
     window.currentDishImgIndex += direction;
     
-    // Зацикливаем слайдер
     if (window.currentDishImgIndex >= window.currentDishImages.length) window.currentDishImgIndex = 0;
     if (window.currentDishImgIndex < 0) window.currentDishImgIndex = window.currentDishImages.length - 1;
     
@@ -140,21 +170,25 @@ function updateModalImageUI() {
         mainImg.src = window.currentDishImages[window.currentDishImgIndex];
     }
     
-    // Подсвечиваем активную миниатюру
     document.querySelectorAll('.dish-thumbnails .thumb-img').forEach((thumb, idx) => {
-        thumb.classList.toggle('active', idx === window.currentDishImgIndex);
+        if (idx === window.currentDishImgIndex) {
+            thumb.style.borderColor = '#c6a137';
+        } else {
+            thumb.style.borderColor = 'transparent';
+        }
     });
 }
 
-// Экспортируем функции в глобальную область видимости для onclick атрибутов
+// Экспортируем функции в глобальную область видимости
 window.switchDishImg = switchDishImg;
 window.jumpToDishImg = jumpToDishImg;
+window.openDishModal = openDishModal;
 
 // Функция закрытия окна блюда
 function closeDishModal() {
     if (!dishModal) return;
-    dishModal.classList.add('hidden');
     dishModal.classList.remove('open');
+    dishModal.classList.add('hidden');
     document.body.classList.remove('modal-open');
 }
 
@@ -165,13 +199,10 @@ if (closeDishModalBtn) {
 
 if (dishModal) {
     dishModal.addEventListener('click', (event) => {
-        // Закрываем, только если кликнули на темный фон (оверлей)
         if (event.target === dishModal) closeDishModal();
     });
 }
 
-// Добавляем функции в глобальную область (на случай вызова из HTML)
-window.openDishModal = openDishModal;
 window.closeDishModal = closeDishModal;
 
 function filterMenu(cat, btn) {
@@ -180,10 +211,9 @@ function filterMenu(cat, btn) {
     renderMenu(cat);
 }
 
-// Экспорт в глобальную область видимости для обработки атрибутов onclick инлайн-элементов HTML
 window.filterMenu = filterMenu;
 
-// ─── УПРАВЛЕНИЕ МОДАЛЬНЫМ ОКНОМ (Сквозной функционал) ───
+// ─── УПРАВЛЕНИЕ МОДАЛЬНЫМ ОКНОМ БРОНИРОВАНИЯ ───
 function openModal() {
     if (!modalOverlay) return;
     modalOverlay.classList.add('open');
@@ -234,26 +264,22 @@ function validateForm(form) {
     const dateInput = form.querySelector('input[type="date"]');
     const timeInput = form.querySelector('input[type="time"]');
 
-    // 1. Валидация имени
     if (nameInput && !nameInput.value.trim()) {
         showToast('Пожалуйста, укажите ваше имя.');
         nameInput.focus();
         return false;
     }
 
-    // 2. Валидация телефона (Строгий паттерн РФ: мобильные и городские)
     if (phoneInput) {
         const phoneVal = phoneInput.value.trim();
-        // Регулярное выражение проверяет наличие кода оператора/города и полную длину номера
         const phoneRegex = /^(\+7|7|8)?[\s\-]?\(?[3489][0-9]{2}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$/;
-        const cleanPhone = phoneVal.replace(/\D/g, ''); // Только цифры
+        const cleanPhone = phoneVal.replace(/\D/g, ''); 
 
         if (!phoneVal) {
             showToast('Пожалуйста, укажите номер телефона.');
             phoneInput.focus();
             return false;
         }
-        // В РФ номере должно быть ровно 11 цифр (включая 7 или 8)
         if (cleanPhone.length < 11 || !phoneRegex.test(phoneVal)) {
             showToast('Некорректный номер телефона. Формат: +7 (999) 999-99-99');
             phoneInput.focus();
@@ -261,7 +287,6 @@ function validateForm(form) {
         }
     }
 
-    // 3. Валидация даты
     if (dateInput) {
         if (!dateInput.value) {
             showToast('Пожалуйста, выберите дату визита.');
@@ -269,7 +294,7 @@ function validateForm(form) {
             return false;
         }
 
-        const selectedDate = dateInput.value; // Строка YYYY-MM-DD
+        const selectedDate = dateInput.value; 
         const today = new Date().toISOString().split('T')[0];
 
         if (selectedDate < today) {
@@ -279,7 +304,6 @@ function validateForm(form) {
         }
     }
 
-    // 4. Валидация времени (С учетом рабочих часов и текущего времени)
     if (timeInput) {
         if (!timeInput.value) {
             showToast('Пожалуйста, выберите время визита.');
@@ -290,10 +314,8 @@ function validateForm(form) {
         const [hours, minutes] = timeInput.value.split(':').map(Number);
         const selectedMinutesFromMidnight = hours * 60 + minutes;
 
-        // Ресторан работает с 12:00 до 23:00. 
-        // По правилам ресторанного бизнеса, брони сажают максимум за 1 час до закрытия (до 22:00)
-        const openTime = 12 * 60;  // 12:00 в минутах
-        const closeTime = 22 * 60; // 22:00 в минутах
+        const openTime = 12 * 60;  
+        const closeTime = 22 * 60; 
 
         if (selectedMinutesFromMidnight < openTime || selectedMinutesFromMidnight > (23 * 60)) {
             showToast('Ресторан Belka Vilka открыт с 12:00 до 23:00.');
@@ -307,7 +329,6 @@ function validateForm(form) {
             return false;
         }
 
-        // Если бронируют на СЕГОДНЯ, время должно быть в будущем (минимум за 30 минут до визита)
         if (dateInput && dateInput.value) {
             const today = new Date().toISOString().split('T')[0];
             if (dateInput.value === today) {
@@ -321,7 +342,7 @@ function validateForm(form) {
                 }
 
                 if (selectedMinutesFromMidnight < currentMinutesFromMidnight + 10) {
-                    showToast('Бронирование на сегодня возможно минимум за 10 минут до визита, чтобы успеть подготовить столик.');
+                    showToast('Бронирование на сегодня возможно минимум за 10 минут до визита.');
                     timeInput.focus();
                     return false;
                 }
@@ -332,14 +353,13 @@ function validateForm(form) {
     return true;
 }
 
-// ─── ИНТЕРАКТИВНАЯ МАСКА ДЛЯ ВВОДА ТЕЛЕФОНА (Продвинутый UX) ───
+// ─── ИНТЕРАКТИВНАЯ МАСКА ДЛЯ ВВОДА ТЕЛЕФОНА ───
 function initPhoneMask() {
     const phoneInputs = document.querySelectorAll('input[name="phone"]');
     
     phoneInputs.forEach(input => {
         input.addEventListener('input', (e) => {
             let el = e.target,
-                clearVal = el.value.replace(/\D/g, ''),
                 matrix = "+7 (___) ___-__-__",
                 i = 0,
                 def = matrix.replace(/\D/g, ""),
@@ -352,7 +372,6 @@ function initPhoneMask() {
             });
         });
         
-        // Автоподстановка +7 при фокусе, если поле пустое
         input.addEventListener('focus', (e) => {
             if (!e.target.value) e.target.value = '+7 ';
         });
@@ -363,22 +382,17 @@ async function submitBooking(event) {
     event.preventDefault();
     const form = event.currentTarget;
 
-    // 1. Сначала запускаем вашу существующую валидацию
     if (!validateForm(form)) return;
 
-    // 2. Вытаскиваем значения полей по атрибуту `name`
     const dateField = form.querySelector('input[name="date"]');
     const timeField = form.querySelector('input[name="time"]');
     const nameField = form.querySelector('input[name="name"]');
     const phoneField = form.querySelector('input[name="phone"]');
     const commentField = form.querySelector('textarea[name="comment"]');
     
-    // Для селекта гостей достаем текстовое значение (например, "2 гостя") 
-    // и превращаем его в чистое число для бэкенда
     const guestValue = form.querySelector('select[name="guests"]').value;
     const guestsCount = parseInt(guestValue) || 2; 
 
-    // 3. Формируем JSON-объект для бэкенда
     const bookingData = {
         name: nameField.value.trim(),
         phone: phoneField.value.trim(),
@@ -389,25 +403,16 @@ async function submitBooking(event) {
     };
 
     try {
-        // 4. Отправляем асинхронный запрос на сервер
         const response = await fetch('/api/reservations', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(bookingData)
         });
 
         if (response.ok) {
-            // Если сервер сохранил заявку:
-            const result = await response.json();
-            
-            // Закрываем, сбрасываем и ставим дефолтные даты
             closeModal();
             form.reset();
-            if (typeof setDefaultDates === 'function') setDefaultDates();
-
-            // Показываем уведомление об успешном бронировании
+            setDefaultDates();
             showToast(`✓ Столик на ${guestValue.toLowerCase()} забронирован на ${bookingData.date} в ${bookingData.time}.`);
         } else {
             const errorData = await response.json();
@@ -419,7 +424,7 @@ async function submitBooking(event) {
     }
 }
 
-// ─── АНИМАЦИЯ ПРИ СКРОЛЛЕ (Intersection Observer) ───
+// ─── АНИМАЦИЯ ПРИ СКРОЛЛЕ ───
 function initRevealAnimation() {
     const reveals = document.querySelectorAll('.reveal');
     const observer = new IntersectionObserver((entries) => {
@@ -443,7 +448,6 @@ function setDefaultDates() {
     });
 }
 
-// ─── ИНИЦИАЛИЗАЦИЯ И СЛУШАТЕЛИ СОБЫТИЙ ───
 function initNavigation() {
     if (burgerBtn && mobileMenu) {
         burgerBtn.addEventListener('click', () => {
@@ -452,7 +456,6 @@ function initNavigation() {
         });
     }
 
-    // Закрытие меню при клике на ссылки с хэшами
     document.querySelectorAll('.mobile-menu a').forEach((link) => {
         link.addEventListener('click', closeMobile);
     });
@@ -465,6 +468,7 @@ function initNavigation() {
     document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') {
             closeModal();
+            closeDishModal();
             closeMobile();
         }
     });
@@ -482,7 +486,6 @@ function initGlobalActions() {
         });
     }
 
-    // Слушатель виртуальной корзины (делегирование событий)
     document.addEventListener('click', (event) => {
         const addButton = event.target.closest('.add-btn');
         if (!addButton) return;
@@ -506,7 +509,6 @@ async function initPage() {
     if (modalBookingForm) {
         modalBookingForm.addEventListener('submit', submitBooking);
     }
-    // Если на главной странице осталась инлайн-форма #bookingForm, её тоже нужно слушать:
     const mainBookingForm = document.getElementById('bookingForm');
     if (mainBookingForm) {
         mainBookingForm.addEventListener('submit', submitBooking);

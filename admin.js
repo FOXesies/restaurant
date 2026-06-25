@@ -18,6 +18,7 @@ const galleryManager = document.getElementById('galleryManager');
 // ГЛОБАЛЬНЫЕ ДАННЫЕ В ПАМЯТИ ФРОНТЕНДА
 let globalMenuData = [];
 let globalReservationsData = [];
+let globalSpecialOffersIds = []; // Хранит ID спец. предложений
 
 // СОСТОЯНИЕ КАРТИНОК РЕДАКТИРУЕМОГО БЛЮДА
 let currentServerMainImg = '';
@@ -42,6 +43,7 @@ function switchTab(tabId) {
         loadReservations();
     }
 }
+window.switchTab = switchTab;
 
 // Живой счётчик букв в названии блюда
 if (dishNameInput) {
@@ -54,30 +56,87 @@ if (dishNameInput) {
 }
 
 /* ─────────────────────────────────────────────────────────
-   2. УПРАВЛЕНИЕ РАЗДЕЛОМ МЕНЮ (БЛЮДА)
+   2. УПРАВЛЕНИЕ СПЕЦ. ПРЕДЛОЖЕНИЯМИ
+   ───────────────────────────────────────────────────────── */
+
+async function loadSpecialOffersIds() {
+    try {
+        const response = await fetch('/api/special-offers');
+        if (response.ok) {
+            globalSpecialOffersIds = await response.json();
+        }
+    } catch (err) {
+        console.error('Ошибка загрузки сез. предложений:', err);
+    }
+}
+
+async function toggleSpecialOffer(dishId, isSpecial) {
+    try {
+        if (isSpecial) {
+            const response = await fetch(`/api/special-offers/${dishId}`, { method: 'DELETE' });
+            if (response.ok) {
+                globalSpecialOffersIds = globalSpecialOffersIds.filter(id => id !== dishId);
+                alert('Блюдо убрано из сезонных предложений');
+            }
+        } else {
+            const response = await fetch('/api/special-offers', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ dish_id: dishId })
+            });
+            if (response.ok) {
+                globalSpecialOffersIds.push(dishId);
+                alert('Блюдо добавлено в сез. предложения!');
+            }
+        }
+        loadAdminMenu(); // Перерисовываем список админки, чтобы обновить кнопки
+    } catch (err) {
+        alert('Не удалось изменить статус сез. предложения');
+    }
+}
+window.toggleSpecialOffer = toggleSpecialOffer;
+
+/* ─────────────────────────────────────────────────────────
+   3. УПРАВЛЕНИЕ РАЗДЕЛОМ МЕНЮ (БЛЮДА)
    ───────────────────────────────────────────────────────── */
 
 // Загрузка блюд с сервера
 async function loadAdminMenu() {
     if (!container) return;
     try {
+        // Загружаем спецпредложения перед отрисовкой кнопок
+        await loadSpecialOffersIds();
+
         const res = await fetch('/api/menu');
         globalMenuData = await res.json();
-        container.innerHTML = globalMenuData.map(item => `
-            <div class="dish-item">
-                <div>
-                    <strong>[${item.category}] ${item.name}</strong> — ${item.price}
+        
+        container.innerHTML = globalMenuData.map(item => {
+            const isSpecial = globalSpecialOffersIds.includes(item.id) || globalSpecialOffersIds.includes(Number(item.id));
+            const specialBtnText = isSpecial ? '❌ Убрать из сезонных' : '⭐️ В сезонные блюда';
+            const specialBtnStyle = isSpecial 
+                ? 'background-color: #e74c3c; color: white; border: none;' 
+                : 'background-color: transparent; color: #ffc107; border: 1px solid #ffc107;';
+
+            return `
+                <div class="dish-item" style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.08); gap: 16px;">
+                    <div>
+                        <strong>[${item.category}] ${item.name}</strong> — ${item.price} ₽
+                    </div>
+                    <div class="action-btns" style="display: flex; gap: 8px; align-items: center;">
+                        <button onclick="toggleSpecialOffer(${item.id}, ${isSpecial})" style="padding: 6px 10px; font-size: 12px; border-radius: 4px; cursor: pointer; font-weight: 500; transition: all 0.2s; ${specialBtnStyle}">
+                            ${specialBtnText}
+                        </button>
+                        <button class="edit-btn" onclick="startEditDish(${item.id})">Редактировать</button>
+                        <button class="delete-btn" onclick="deleteDish(${item.id})">Удалить</button>
+                    </div>
                 </div>
-                <div class="action-btns">
-                    <button class="edit-btn" onclick="startEditDish(${item.id})">Редактировать</button>
-                    <button class="delete-btn" onclick="deleteDish(${item.id})">Удалить</button>
-                </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
     } catch (err) {
         console.error('Ошибка загрузки меню:', err);
     }
 }
+window.loadAdminMenu = loadAdminMenu;
 
 // Отображение менеджера фотографий при редактировании
 function renderPhotoManagers() {
@@ -86,7 +145,7 @@ function renderPhotoManagers() {
     if (currentServerMainImg) {
         mainPhotoManager.innerHTML = `
             <div class="photo-card">
-                <img src="${currentServerMainImg}">
+                <img src="${currentServerMainImg}" style="width: 80px; height: 60px; object-fit: cover; border-radius: 4px;">
                 <button type="button" class="remove-badge" onclick="deleteMainPhotoState()">✕</button>
             </div>
         `;
@@ -103,7 +162,7 @@ function renderPhotoManagers() {
     if (currentServerGallery.length > 0) {
         galleryManager.innerHTML = currentServerGallery.map((url, idx) => `
             <div class="photo-card">
-                <img src="${url}">
+                <img src="${url}" style="width: 80px; height: 60px; object-fit: cover; border-radius: 4px;">
                 <button type="button" class="remove-badge" onclick="deleteGalleryPhotoState(${idx})">✕</button>
             </div>
         `).join('');
@@ -118,11 +177,13 @@ function deleteMainPhotoState() {
     currentServerMainImg = '';
     renderPhotoManagers();
 }
+window.deleteMainPhotoState = deleteMainPhotoState;
 
 function deleteGalleryPhotoState(index) {
     currentServerGallery.splice(index, 1);
     renderPhotoManagers();
 }
+window.deleteGalleryPhotoState = deleteGalleryPhotoState;
 
 // Включение режима редактирования блюда
 function startEditDish(id) {
@@ -149,6 +210,7 @@ function startEditDish(id) {
     if (charCounter) charCounter.textContent = `${dish.name.length} / 50 символов`;
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+window.startEditDish = startEditDish;
 
 // Очистка формы и сброс состояния к режиму создания
 function resetFormMode() {
@@ -175,7 +237,6 @@ function resetFormMode() {
         charCounter.style.color = '#888';
     }
 }
-
 if (cancelEditBtn) cancelEditBtn.addEventListener('click', resetFormMode);
 if (createNewBtn) createNewBtn.addEventListener('click', resetFormMode);
 
@@ -197,7 +258,6 @@ if (form) {
         const editId = dishIdInput ? dishIdInput.value : '';
         const formData = new FormData();
 
-        // Передаем информацию по старым картинкам бэкенду
         if (editId) {
             formData.append('keptMainImg', currentServerMainImg);
             formData.append('keptGallery', JSON.stringify(currentServerGallery));
@@ -240,9 +300,10 @@ async function deleteDish(id) {
         alert('Ошибка сети');
     }
 }
+window.deleteDish = deleteDish;
 
 /* ─────────────────────────────────────────────────────────
-   3. УПРАВЛЕНИЕ ЗАЯВКАМИ НА БРОНИРОВАНИЕ
+   4. УПРАВЛЕНИЕ ЗАЯВКАМИ НА БРОНИРОВАНИЕ
    ───────────────────────────────────────────────────────── */
 
 async function loadReservations() {
@@ -256,6 +317,7 @@ async function loadReservations() {
         resContainer.innerHTML = '<p style="color: #ff4d4d;">Ошибка загрузки бронирований</p>';
     }
 }
+window.loadReservations = loadReservations;
 
 function applyReservationsFilters() {
     const resContainer = document.getElementById('adminReservationsContainer');
@@ -292,70 +354,77 @@ function applyReservationsFilters() {
         const currentClass = statusClasses[booking.status] || '';
 
         return `
-            <div class="res-item ${currentClass}">
+            <div class="res-item ${currentClass}" style="display: flex; flex-direction: column; gap: 12px; align-items: stretch; padding: 16px; margin-bottom: 12px; border-radius: 6px; background: rgba(255,255,255,0.03);">
                 <div class="res-info">
-                    <h3>${booking.name} (Стол на ${booking.guests} чел.)</h3>
-                    <p><strong>Телефон:</strong> ${booking.phone}</p>
-                    ${booking.comment ? `<p><strong>Комментарий:</strong> <em>${booking.comment}</em></p>` : ''}
-                    <div class="res-meta">
-                        <span>📅 ${booking.date}</span>
-                        <span>⏰ ${booking.time}</span>
-                    </div>
+                    <h3 style="margin: 0 0 8px 0; font-size: 1.2rem;">${booking.name} (Стол на ${booking.guests} чел.)</h3>
+                    <p style="margin: 4px 0; color: #ccc;"><strong>Телефон:</strong> ${booking.phone}</p>
+                    ${booking.comment ? `<p style="margin: 6px 0 0 0; color: #aaa;"><strong>Комментарий:</strong> <em>${booking.comment}</em></p>` : ''}
                 </div>
-                <div>
-                    <select class="status-select" onchange="updateReservationStatus(${booking.id}, this.value)">
-                        <option value="ожидает ответа" ${booking.status === 'ожидает ответа' ? 'selected' : ''}>⏳ Ожидает ответа</option>
-                        <option value="завершена" ${booking.status === 'завершена' ? 'selected' : ''}>✅ Завершена</option>
-                        <option value="отменена" ${booking.status === 'отменена' ? 'selected' : ''}>❌ Отменена</option>
-                        <option value="просрочена" ${booking.status === 'просрочена' ? 'selected' : ''} disabled>💀 Просрочена</option>
-                    </select>
+                
+                <div class="res-meta" style="
+                    display: flex; 
+                    justify-content: space-between;
+                    align-items: center;
+                    flex-wrap: wrap;
+                    gap: 12px; 
+                    padding-top: 12px; 
+                    border-top: 1px solid rgba(255, 255, 255, 0.08);
+                ">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div style="font-size: 1.2rem;">📅</div>
+                        <div>${booking.date} в ${booking.time}</div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 0.9rem; color: #888;">Статус:</span>
+                        <select onchange="updateReservationStatus(${booking.id}, this.value)" style="padding: 6px; background: #222; color: #fff; border: 1px solid #444; border-radius: 4px; cursor: pointer;">
+                            <option value="ожидает ответа" ${booking.status === 'ожидает ответа' ? 'selected' : ''}>Ожидает ответа</option>
+                            <option value="завершена" ${booking.status === 'завершена' ? 'selected' : ''}>Завершена</option>
+                            <option value="отменена" ${booking.status === 'отменена' ? 'selected' : ''}>Отменена</option>
+                            <option value="просрочена" ${booking.status === 'просрочена' ? 'selected' : ''}>Просрочена</option>
+                        </select>
+                    </div>
                 </div>
             </div>
         `;
     }).join('');
 }
+window.applyReservationsFilters = applyReservationsFilters;
 
-function clearFilterDate() {
-    const filterDate = document.getElementById('filterDate');
-    if (filterDate) {
-        filterDate.value = '';
-        applyReservationsFilters();
-    }
-}
-
+// Изменение статуса заявки бронирования
 async function updateReservationStatus(id, newStatus) {
     try {
-        const res = await fetch(`/api/reservations/${id}/status`, {
-            method: 'PATCH',
+        const res = await fetch(`/api/reservations/${id}`, {
+            method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ status: newStatus })
         });
-        
         if (res.ok) {
-            const target = globalReservationsData.find(b => b.id === id);
-            if (target) target.status = newStatus;
-            applyReservationsFilters();
+            alert('Статус заявки успешно обновлен!');
+            loadReservations(); // Перезагружаем список
         } else {
-            alert('Не удалось обновить статус');
+            alert('Не удалось обновить статус на сервере');
         }
     } catch (err) {
-        alert('Ошибка сети при обновлении статуса');
+        console.error('Ошибка изменения статуса:', err);
+        alert('Ошибка сети при попытке изменить статус');
     }
 }
+window.updateReservationStatus = updateReservationStatus;
 
 /* ─────────────────────────────────────────────────────────
-   4. ИНИЦИАЛИЗАЦИЯ ПРИ ЗАПУСКЕ СТРАНИЦЫ
+   5. ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ СТРАНИЦЫ
    ───────────────────────────────────────────────────────── */
-document.addEventListener('DOMContentLoaded', () => {
-    loadAdminMenu();
-});
 
-// Экспорт необходимых HTML-инлайну функций в глобальную область видимости
-window.switchTab = switchTab;
-window.startEditDish = startEditDish;
-window.deleteDish = deleteDish;
-window.deleteMainPhotoState = deleteMainPhotoState;
-window.deleteGalleryPhotoState = deleteGalleryPhotoState;
-window.updateReservationStatus = updateReservationStatus;
-window.clearFilterDate = clearFilterDate;
-window.applyReservationsFilters = applyReservationsFilters;
+document.addEventListener('DOMContentLoaded', () => {
+    // Первичный вывод меню админки
+    loadAdminMenu();
+
+    // Привязка слушателей событий для фильтров бронирования (если элементы на текущей вкладке)
+    const filterStatus = document.getElementById('filterStatus');
+    const filterDate = document.getElementById('filterDate');
+    const filterSort = document.getElementById('filterSort');
+    
+    if (filterStatus) filterStatus.addEventListener('change', applyReservationsFilters);
+    if (filterDate) filterDate.addEventListener('change', applyReservationsFilters);
+    if (filterSort) filterSort.addEventListener('change', applyReservationsFilters);
+});
