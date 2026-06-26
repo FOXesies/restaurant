@@ -7,13 +7,14 @@ const sqlite3 = require('sqlite3').verbose();
 const app = express();
 const PORT = 5500;
 
-// Подключаемся к базе данных
+// Подключаемся к базе данных SQLite
 const DB_PATH = path.join(__dirname, 'restaurant.db');
 const db = new sqlite3.Database(DB_PATH);
 
 const JSON_PATH = path.join(__dirname, 'menu.json');
+const PROMO_JSON_PATH = path.join(__dirname, 'promotions.json');
 
-// Инициализация таблиц
+// Инициализация таблиц базы данных
 db.serialize(() => {
     db.run(`CREATE TABLE IF NOT EXISTS menu (
         id INTEGER PRIMARY KEY,
@@ -27,7 +28,6 @@ db.serialize(() => {
         gallery TEXT
     )`);
 
-    // Добавили поле created_at в таблицу бронирований
     db.run(`CREATE TABLE IF NOT EXISTS reservations (
         id INTEGER PRIMARY KEY,
         name TEXT,
@@ -42,6 +42,13 @@ db.serialize(() => {
 
     db.run(`CREATE TABLE IF NOT EXISTS special_offers (
         dish_id INTEGER PRIMARY KEY
+    )`);
+
+    db.run(`CREATE TABLE IF NOT EXISTS promotions (
+        id INTEGER PRIMARY KEY,
+        badge TEXT,
+        title TEXT,
+        description TEXT
     )`);
 
     // Авто-перенос меню из JSON (если база пустая)
@@ -62,6 +69,21 @@ db.serialize(() => {
             } catch (e) { console.error('Ошибка миграции меню:', e); }
         }
     });
+
+    // Авто-перенос стартовых акций из promotions.json (если база пустая)
+    db.get("SELECT COUNT(*) as count FROM promotions", (err, row) => {
+        if (!err && row.count === 0 && fs.existsSync(PROMO_JSON_PATH)) {
+            try {
+                const localPromos = JSON.parse(fs.readFileSync(PROMO_JSON_PATH, 'utf8'));
+                const stmt = db.prepare(`INSERT INTO promotions (id, badge, title, description) VALUES (?, ?, ?, ?)`);
+                localPromos.forEach(item => {
+                    stmt.run([item.id, item.badge, item.title, item.description]);
+                });
+                stmt.finalize();
+                console.log('📌 Стартовые акции успешно перенесены в SQLite!');
+            } catch (e) { console.error('Ошибка миграции акций:', e); }
+        }
+    });
 });
 
 // Middleware
@@ -69,7 +91,7 @@ app.use(express.json());
 app.use(express.static(__dirname)); 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Настройка Multer
+// Настройка хранилища картинок Multer
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         const dir = path.join(__dirname, 'uploads');
@@ -168,20 +190,65 @@ app.delete('/api/menu/:id', (req, res) => {
 });
 
 /* ─────────────────────────────────────────────────────────
-   API ЭНДПОИНТЫ (СПЕЦ. ПРЕДЛОЖЕНИЯ)
+   API ЭНДПОИНТЫ (АКЦИИ И СПЕЦИАЛЬНЫЕ ПРЕДЛОЖЕНИЯ)
    ───────────────────────────────────────────────────────── */
 
-// 1. Получить ID всех блюд в спец. предложениях
+app.get('/api/promotions', (req, res) => {
+    db.all("SELECT * FROM promotions", [], (err, rows) => {
+        if (err) return res.status(500).json({ error: 'Ошибка чтения акций из базы данных' });
+        res.json(rows);
+    });
+});
+
+app.post('/api/promotions', (req, res) => {
+    const { badge, title, description } = req.body;
+    const id = Date.now();
+
+    db.run(
+        "INSERT INTO promotions (id, badge, title, description) VALUES (?, ?, ?, ?)",
+        [id, badge, title, description],
+        function(err) {
+            if (err) return res.status(500).json({ error: 'Ошибка добавления акции в БД' });
+            res.status(201).json({ success: true, promo: { id, badge, title, description } });
+        }
+    );
+});
+
+app.put('/api/promotions/:id', (req, res) => {
+    const id = Number(req.params.id);
+    const { badge, title, description } = req.body;
+
+    db.run(
+        "UPDATE promotions SET badge = ?, title = ?, description = ? WHERE id = ?",
+        [badge, title, description, id],
+        function(err) {
+            if (err) return res.status(500).json({ error: 'Ошибка обновления акции в БД' });
+            res.json({ success: true });
+        }
+    );
+});
+
+app.delete('/api/promotions/:id', (req, res) => {
+    const id = Number(req.params.id);
+
+    db.run("DELETE FROM promotions WHERE id = ?", [id], function(err) {
+        if (err) return res.status(500).json({ error: 'Ошибка удаления акции из БД' });
+        res.json({ success: true });
+    });
+});
+
+/* ─────────────────────────────────────────────────────────
+   API ЭНДПОИНТЫ (СЕЗОННЫЕ СВЯЗИ БЛЮД)
+   ───────────────────────────────────────────────────────── */
+
 app.get('/api/special-offers', (req, res) => {
     db.all("SELECT dish_id FROM special_offers", [], (err, rows) => {
         if (err) return res.status(500).json({ error: 'Ошибка чтения спец. предложений' });
-        // Возвращаем просто чистый массив ID: [17193, 17195, ...]
         const ids = rows.map(row => row.dish_id);
         res.json(ids);
     });
 });
 
-// 2. Добавить блюдо в спец. предложения
 app.post('/api/special-offers', (req, res) => {
     const { dish_id } = req.body;
     if (!dish_id) return res.status(400).json({ error: 'Не указан ID блюда' });
@@ -192,7 +259,6 @@ app.post('/api/special-offers', (req, res) => {
     });
 });
 
-// 3. Удалить блюдо из спец. предложений
 app.delete('/api/special-offers/:id', (req, res) => {
     const dish_id = Number(req.params.id);
     db.run("DELETE FROM special_offers WHERE dish_id = ?", [dish_id], function(err) {
@@ -205,7 +271,6 @@ app.delete('/api/special-offers/:id', (req, res) => {
    API ЭНДПОИНТЫ (ЗАЯВКИ / БРОНИРОВАНИЯ)
    ───────────────────────────────────────────────────────── */
 
-// 1. Получить все заявки
 app.get('/api/reservations', (req, res) => {
     db.all("SELECT * FROM reservations", [], (err, rows) => {
         if (err) return res.status(500).json({ error: 'Ошибка чтения заявок из БД' });
@@ -213,46 +278,45 @@ app.get('/api/reservations', (req, res) => {
     });
 });
 
-// 2. Изменить статус заявки (PATCH)
-app.patch('/api/reservations/:id/status', (req, res) => {
+app.put('/api/reservations/:id', (req, res) => {
     const id = Number(req.params.id);
     const { status } = req.body;
 
     db.run("UPDATE reservations SET status = ? WHERE id = ?", [status, id], function(err) {
         if (err) return res.status(500).json({ error: 'Ошибка при обновлении статуса' });
-        db.get("SELECT * FROM reservations WHERE id = ?", [id], (err, row) => {
-            if (err) return res.status(500).json({ error: 'Ошибка получения данных' });
-            res.json({ success: true, reservation: row });
-        });
+        res.json({ success: true });
     });
 });
 
-// 3. Создать новую заявку (POST) — ТЕПЕРЬ С АВТО-ДАТОЙ СОЗДАНИЯ
+app.get('/api/menu/random', (req, res) => {
+    const query = 'SELECT * FROM menu ORDER BY RANDOM() LIMIT 3';
+    
+    db.all(query, [], (err, rows) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        res.json(rows);
+    });
+});
+
+// Дописанный метод отправки бронирований клиентами
 app.post('/api/reservations', (req, res) => {
     const id = Date.now();
     const { name, phone, guests, comment, date, time } = req.body;
     const status = 'ожидает ответа';
-    
-    // Автоматически генерируем текущую дату и время сервера в читаемом формате
     const created_at = new Date().toLocaleString('ru-RU'); 
 
     db.run(
         `INSERT INTO reservations (id, name, phone, date, time, guests, comment, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [id, name, phone, date, time, guests || '1', comment || '', status, created_at],
         function(err) {
-            if (err) return res.status(500).json({ error: 'Не удалось создать заявку в БД' });
-            res.status(201).json({ 
-                success: true, 
-                reservation: { id, name, phone, date, time, guests, comment, status, created_at } 
-            });
+            if (err) return res.status(500).json({ error: 'Ошибка при записи бронирования в БД' });
+            res.status(201).json({ success: true, id, message: 'Бронирование успешно создано' });
         }
     );
 });
 
 // Запуск сервера
 app.listen(PORT, () => {
-    console.log(`\n==============================================`);
-    console.log(`🚀 БЭКЕНД НА СУБД SQLITE ЗАПУЩЕН!`);
-    console.log(`🌍 Адрес панели управления: http://localhost:${PORT}/admin.html`);
-    console.log(`==============================================\n`);
+    console.log(`🚀 Сервер успешно запущен на http://localhost:${PORT}`);
 });

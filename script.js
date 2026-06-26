@@ -515,4 +515,70 @@ async function initPage() {
     }
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+    const promoGrid = document.getElementById('promoGrid');
+    
+    if (promoGrid) {
+        fetch('/api/promotions')
+            .then(res => res.json())
+            .then(data => {
+                if(data.length === 0) {
+                    promoGrid.innerHTML = '<p style="color: #aaa; text-align:center; width:100%;">На данный момент нет активных акций.</p>';
+                    return;
+                }
+                
+                promoGrid.innerHTML = data.map(promo => `
+                    <div class="promo-card reveal active" style="opacity: 1; transform: translate(0, 0);">
+                        <div class="promo-tag">${promo.badge}</div>
+                        <h3>${promo.title}</h3>
+                        <p>${promo.description}</p>
+                    </div>
+                `).join('');
+            })
+            .catch(err => console.error('Ошибка загрузки акций на клиентской стороне:', err));
+    }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    fetchPopularDishes();
+});
+
+async function fetchPopularDishes() {
+    const container = document.getElementById('popularDishesContainer');
+    
+    try {
+        const response = await fetch('/api/menu/random');
+        if (!response.ok) throw new Error('Ошибка при получении меню');
+        
+        const dishes = await response.json();
+        
+        if (dishes.length === 0) {
+            container.innerHTML = '<p style="color: #888; text-align: center; grid-column: 1/-1;">Пока нет доступных блюд</p>';
+            return;
+        }
+
+        // Рендерим 3 карточки
+        container.innerHTML = dishes.map(dish => `
+            <div class="dish-card reveal">
+                <div class="dish-img-wrap">
+                    <img class="dish-img" src="${dish.image || 'images/default-dish.jpg'}" alt="${dish.name}">
+                </div>
+                <div class="dish-info">
+                    <h4>${dish.name}</h4>
+                    <p>${dish.description || ''}</p>
+                    <div class="dish-price">${dish.price} ₽</div>
+                </div>
+            </div>
+        `).join('');
+
+        if (window.initRevealAnimations) {
+            window.initRevealAnimations();
+        }
+
+    } catch (error) {
+        console.error('Ошибка:', error);
+        container.innerHTML = '<p style="color: #ff6b6b; text-align: center; grid-column: 1/-1;">Не удалось загрузить популярные блюда</p>';
+    }
+}
+
 document.addEventListener('DOMContentLoaded', initPage);

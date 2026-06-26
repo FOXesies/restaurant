@@ -1,4 +1,4 @@
-// ССЫЛКИ НА HTML ЭЛЕМЕНТЫ ФОРМЫ И МЕНЮ
+// ССЫЛКИ НА HTML ЭЛЕМЕНТЫ ФОРМЫ И МЕНЮ (БЛЮДА)
 const form = document.getElementById('addDishForm');
 const container = document.getElementById('adminMenuContainer');
 const dishNameInput = document.getElementById('dishNameInput');
@@ -15,10 +15,22 @@ const mainImgLabel = document.getElementById('mainImgLabel');
 const mainPhotoManager = document.getElementById('mainPhotoManager');
 const galleryManager = document.getElementById('galleryManager');
 
+// ССЫЛКИ НА ЭЛЕМЕНТЫ ФОРМЫ УПРАВЛЕНИЯ АКЦИЯМИ (ТРЕТЬЯ ВКЛАДКА)
+const promoForm = document.getElementById('addPromoForm');
+const promoIdInput = document.getElementById('promoIdInput');
+const promoBadgeInput = document.getElementById('promoBadgeInput');
+const promoTitleInput = document.getElementById('promoTitleInput');
+const promoDescInput = document.getElementById('promoDescInput');
+const promoFormTitle = document.getElementById('promoFormTitle');
+const promoSubmitBtn = document.getElementById('promoSubmitBtn');
+const cancelPromoEditBtn = document.getElementById('cancelPromoEditBtn');
+const adminPromotionsContainer = document.getElementById('adminPromotionsContainer');
+
 // ГЛОБАЛЬНЫЕ ДАННЫЕ В ПАМЯТИ ФРОНТЕНДА
 let globalMenuData = [];
 let globalReservationsData = [];
-let globalSpecialOffersIds = []; // Хранит ID спец. предложений
+let globalSpecialOffersIds = []; // Хранит ID сезонных блюд
+let globalPromotionsData = [];   // Хранит данные полноценных акций
 
 // СОСТОЯНИЕ КАРТИНОК РЕДАКТИРУЕМОГО БЛЮДА
 let currentServerMainImg = '';
@@ -41,6 +53,10 @@ function switchTab(tabId) {
 
     if (tabId === 'reservations-tab') {
         loadReservations();
+    } else if (tabId === 'menu-tab') {
+        loadAdminMenu();
+    } else if (tabId === 'promotions-tab') {
+        loadPromotions();
     }
 }
 window.switchTab = switchTab;
@@ -50,13 +66,157 @@ if (dishNameInput) {
     dishNameInput.addEventListener('input', () => {
         const length = dishNameInput.value.length;
         if (!charCounter) return;
-        charCounter.textContent = `${length} / 50 символов`;
+        charCounter.textContent = `${length} / 50 symbols`;
         charCounter.style.color = length >= 50 ? '#ff4d4d' : length >= 40 ? '#e2ba43' : '#888';
     });
 }
 
 /* ─────────────────────────────────────────────────────────
-   2. УПРАВЛЕНИЕ СПЕЦ. ПРЕДЛОЖЕНИЯМИ
+   2. УПРАВЛЕНИЕ ПОЛНОЦЕННЫМИ АКЦИЯМИ (НОВАЯ ВКЛАДКА)
+   ───────────────────────────────────────────────────────── */
+
+// Загрузка акций с сервера и их рендеринг
+async function loadPromotions() {
+    try {
+        const response = await fetch('/api/promotions');
+        const data = await response.json();
+        globalPromotionsData = data; 
+
+        if (!adminPromotionsContainer) return;
+
+        if (data.length === 0) {
+            adminPromotionsContainer.innerHTML = '<p style="color: #999;">Список акций пуст. Добавьте первую акцию слева.</p>';
+            return;
+        }
+
+        adminPromotionsContainer.innerHTML = data.map(promo => `
+            <div class="admin-promo-card" style="background: rgba(255,255,255,0.02); padding: 15px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; gap: 15px;">
+                <div style="flex: 1;">
+                    <span style="font-size: 11px; background: #e2ba43; color: #000; padding: 2px 6px; border-radius: 3px; font-weight: bold; text-transform: uppercase;">${promo.badge}</span>
+                    <h3 style="margin: 8px 0 4px 0; color: #fff;">${promo.title}</h3>
+                    <p style="margin: 0; font-size: 14px; color: #aaa;">${promo.description}</p>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button onclick="startEditPromo(${promo.id})" style="padding: 6px 12px; background: #28a745; color: #fff; border: none; border-radius: 4px; cursor: pointer;">Редактировать</button>
+                    <button onclick="deletePromo(${promo.id})" style="padding: 6px 12px; background: #dc3545; color: #fff; border: none; border-radius: 4px; cursor: pointer;">Удалить</button>
+                </div>
+            </div>
+        `).join('');
+
+    } catch (err) {
+        console.error('Ошибка при загрузке акций:', err);
+    }
+}
+window.loadPromotions = loadPromotions;
+
+// Обработка отправки формы акций (Создание / Обновление)
+if (promoForm) {
+    promoForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const editId = promoIdInput.value; 
+        const payload = {
+            badge: promoBadgeInput.value.trim(),
+            title: promoTitleInput.value.trim(),
+            description: promoDescInput.value.trim()
+        };
+
+        try {
+            let response;
+            if (editId) {
+                response = await fetch(`/api/promotions/${editId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+            } else {
+                response = await fetch('/api/promotions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+            }
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert(editId ? 'Акция успешно обновлена!' : 'Акция успешно добавлена!');
+                resetPromoFormMode(); 
+                loadPromotions();     
+            } else {
+                alert('Ошибка: ' + (result.error || 'Не удалось сохранить изменения'));
+            }
+
+        } catch (err) {
+            console.error('Ошибка сохранения акции:', err);
+            alert('Сбой сети или сервера при сохранении');
+        }
+    });
+}
+
+// Переход формы акций в режим редактирования
+function startEditPromo(id) {
+    const promo = globalPromotionsData.find(item => Number(item.id) === Number(id));
+    if (!promo) return;
+
+    promoIdInput.value = promo.id;
+    promoBadgeInput.value = promo.badge;
+    promoTitleInput.value = promo.title;
+    promoDescInput.value = promo.description;
+
+    if (promoFormTitle) promoFormTitle.innerText = 'Редактировать акцию';
+    if (promoSubmitBtn) {
+        promoSubmitBtn.innerText = 'Сохранить изменения';
+        promoSubmitBtn.style.background = '#28a745'; 
+        promoSubmitBtn.style.color = '#fff';
+    }
+    if (cancelPromoEditBtn) cancelPromoEditBtn.style.display = 'inline-block';
+}
+window.startEditPromo = startEditPromo;
+
+// Сброс формы акций
+function resetPromoFormMode() {
+    if (!promoForm) return;
+    promoForm.reset();
+    if (promoIdInput) promoIdInput.value = ''; 
+    
+    if (promoFormTitle) promoFormTitle.innerText = 'Добавить новую акцию';
+    if (promoSubmitBtn) {
+        promoSubmitBtn.innerText = 'Сохранить акцию';
+        promoSubmitBtn.style.background = '#e2ba43';
+        promoSubmitBtn.style.color = '#000';
+    }
+    if (cancelPromoEditBtn) cancelPromoEditBtn.style.display = 'none'; 
+}
+if (cancelPromoEditBtn) cancelPromoEditBtn.addEventListener('click', resetPromoFormMode);
+
+// Удаление акции
+async function deletePromo(id) {
+    if (!confirm('Вы уверены, что хотите удалить эту акцию?')) return;
+
+    try {
+        const response = await fetch(`/api/promotions/${id}`, {
+            method: 'DELETE'
+        });
+        const result = await response.json();
+
+        if (result.success) {
+            if (promoIdInput && Number(promoIdInput.value) === Number(id)) {
+                resetPromoFormMode();
+            }
+            loadPromotions(); 
+        } else {
+            alert('Не удалось удалить акцию');
+        }
+    } catch (err) {
+        console.error('Ошибка удаления:', err);
+    }
+}
+window.deletePromo = deletePromo;
+
+
+/* ─────────────────────────────────────────────────────────
+   3. УПРАВЛЕНИЕ СЕЗОННЫМИ ПРЕДЛОЖЕНИЯМИ (БЛЮДА-ЗВЕЗДЫ)
    ───────────────────────────────────────────────────────── */
 
 async function loadSpecialOffersIds() {
@@ -75,7 +235,7 @@ async function toggleSpecialOffer(dishId, isSpecial) {
         if (isSpecial) {
             const response = await fetch(`/api/special-offers/${dishId}`, { method: 'DELETE' });
             if (response.ok) {
-                globalSpecialOffersIds = globalSpecialOffersIds.filter(id => id !== dishId);
+                globalSpecialOffersIds = globalSpecialOffersIds.filter(id => Number(id) !== Number(dishId));
                 alert('Блюдо убрано из сезонных предложений');
             }
         } else {
@@ -89,7 +249,7 @@ async function toggleSpecialOffer(dishId, isSpecial) {
                 alert('Блюдо добавлено в сез. предложения!');
             }
         }
-        loadAdminMenu(); // Перерисовываем список админки, чтобы обновить кнопки
+        loadAdminMenu(); 
     } catch (err) {
         alert('Не удалось изменить статус сез. предложения');
     }
@@ -97,14 +257,12 @@ async function toggleSpecialOffer(dishId, isSpecial) {
 window.toggleSpecialOffer = toggleSpecialOffer;
 
 /* ─────────────────────────────────────────────────────────
-   3. УПРАВЛЕНИЕ РАЗДЕЛОМ МЕНЮ (БЛЮДА)
+   4. УПРАВЛЕНИЕ РАЗДЕЛОМ МЕНЮ (БЛЮДА)
    ───────────────────────────────────────────────────────── */
 
-// Загрузка блюд с сервера
 async function loadAdminMenu() {
     if (!container) return;
     try {
-        // Загружаем спецпредложения перед отрисовкой кнопок
         await loadSpecialOffersIds();
 
         const res = await fetch('/api/menu');
@@ -120,7 +278,7 @@ async function loadAdminMenu() {
             return `
                 <div class="dish-item" style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.08); gap: 16px;">
                     <div>
-                        <strong>[${item.category}] ${item.name}</strong> — ${item.price} ₽
+                        <strong>[${item.category}] ${item.name}</strong> — ${item.price}
                     </div>
                     <div class="action-btns" style="display: flex; gap: 8px; align-items: center;">
                         <button onclick="toggleSpecialOffer(${item.id}, ${isSpecial})" style="padding: 6px 10px; font-size: 12px; border-radius: 4px; cursor: pointer; font-weight: 500; transition: all 0.2s; ${specialBtnStyle}">
@@ -138,7 +296,6 @@ async function loadAdminMenu() {
 }
 window.loadAdminMenu = loadAdminMenu;
 
-// Отображение менеджера фотографий при редактировании
 function renderPhotoManagers() {
     if (!mainPhotoManager || !galleryManager || !mainImgInput) return;
 
@@ -185,7 +342,6 @@ function deleteGalleryPhotoState(index) {
 }
 window.deleteGalleryPhotoState = deleteGalleryPhotoState;
 
-// Включение режима редактирования блюда
 function startEditDish(id) {
     const dish = globalMenuData.find(item => Number(item.id) === Number(id));
     if (!dish || !form) return;
@@ -205,14 +361,13 @@ function startEditDish(id) {
     form.querySelector('input[name="price"]').value = parseInt(dish.price) || '';
     form.querySelector('input[name="weight"]').value = parseInt(dish.weight) || '';
     form.querySelector('input[name="calories"]').value = parseInt(dish.calories) || '';
-    form.querySelector('textarea[name="desc"]').value = dish.desc;
+    form.querySelector('textarea[name="desc"]').value = dish.desc || '';
 
-    if (charCounter) charCounter.textContent = `${dish.name.length} / 50 символов`;
+    if (charCounter) charCounter.textContent = `${dish.name.length} / 50 symbols`;
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 window.startEditDish = startEditDish;
 
-// Очистка формы и сброс состояния к режиму создания
 function resetFormMode() {
     if (!form) return;
     form.reset();
@@ -229,18 +384,17 @@ function resetFormMode() {
     
     if (mainImgInput) {
         mainImgInput.setAttribute('required', '');
-        if (mainImgLabel) mainImgLabel.textContent = 'Главное превью (1 фото)';
+        if (mainImgLabel) mainImgLabel.textContent = 'Главное превью (1 photo) *Обязательно*:';
     }
     
     if (charCounter) {
-        charCounter.textContent = '0 / 50 символов';
+        charCounter.textContent = '0 / 50 symbols';
         charCounter.style.color = '#888';
     }
 }
 if (cancelEditBtn) cancelEditBtn.addEventListener('click', resetFormMode);
 if (createNewBtn) createNewBtn.addEventListener('click', resetFormMode);
 
-// Отправка данных формы блюда (POST/PUT)
 if (form) {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -289,7 +443,6 @@ if (form) {
     });
 }
 
-// Удаление блюда
 async function deleteDish(id) {
     if (!confirm('Удалить это блюдо?')) return;
     try {
@@ -303,7 +456,7 @@ async function deleteDish(id) {
 window.deleteDish = deleteDish;
 
 /* ─────────────────────────────────────────────────────────
-   4. УПРАВЛЕНИЕ ЗАЯВКАМИ НА БРОНИРОВАНИЕ
+   5. УПРАВЛЕНИЕ ЗАЯВКАМИ НА БРОНИРОВАНИЕ
    ───────────────────────────────────────────────────────── */
 
 async function loadReservations() {
@@ -361,15 +514,7 @@ function applyReservationsFilters() {
                     ${booking.comment ? `<p style="margin: 6px 0 0 0; color: #aaa;"><strong>Комментарий:</strong> <em>${booking.comment}</em></p>` : ''}
                 </div>
                 
-                <div class="res-meta" style="
-                    display: flex; 
-                    justify-content: space-between;
-                    align-items: center;
-                    flex-wrap: wrap;
-                    gap: 12px; 
-                    padding-top: 12px; 
-                    border-top: 1px solid rgba(255, 255, 255, 0.08);
-                ">
+                <div class="res-meta" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.08);">
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <div style="font-size: 1.2rem;">📅</div>
                         <div>${booking.date} в ${booking.time}</div>
@@ -390,7 +535,6 @@ function applyReservationsFilters() {
 }
 window.applyReservationsFilters = applyReservationsFilters;
 
-// Изменение статуса заявки бронирования
 async function updateReservationStatus(id, newStatus) {
     try {
         const res = await fetch(`/api/reservations/${id}`, {
@@ -400,7 +544,7 @@ async function updateReservationStatus(id, newStatus) {
         });
         if (res.ok) {
             alert('Статус заявки успешно обновлен!');
-            loadReservations(); // Перезагружаем список
+            loadReservations(); 
         } else {
             alert('Не удалось обновить статус на сервере');
         }
@@ -412,19 +556,55 @@ async function updateReservationStatus(id, newStatus) {
 window.updateReservationStatus = updateReservationStatus;
 
 /* ─────────────────────────────────────────────────────────
-   5. ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ СТРАНИЦЫ
+   6. ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ СТРАНИЦЫ
    ───────────────────────────────────────────────────────── */
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Первичный вывод меню админки
-    loadAdminMenu();
-
-    // Привязка слушателей событий для фильтров бронирования (если элементы на текущей вкладке)
-    const filterStatus = document.getElementById('filterStatus');
-    const filterDate = document.getElementById('filterDate');
-    const filterSort = document.getElementById('filterSort');
+    const authModal = document.getElementById('adminAuthModal');
+    const loginForm = document.getElementById('adminLoginForm');
     
-    if (filterStatus) filterStatus.addEventListener('change', applyReservationsFilters);
-    if (filterDate) filterDate.addEventListener('change', applyReservationsFilters);
-    if (filterSort) filterSort.addEventListener('change', applyReservationsFilters);
+    const SECURE_LOGIN = "admin";
+    const SECURE_PASSWORD = "admin"; 
+
+    function checkAdminAuth() {
+        if (sessionStorage.getItem('isAdminAuthenticated') === 'true') {
+            if (authModal) authModal.classList.add('hidden');
+            document.body.classList.remove('auth-locked'); 
+            
+            // Загружаем данные по умолчанию (первую вкладку меню)
+            loadAdminMenu(); 
+        } else {
+            if (authModal) authModal.classList.remove('hidden');
+            document.body.classList.add('auth-locked');    
+        }
+    }
+
+    if (loginForm) {
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const usernameInput = document.getElementById('authLogin').value.trim();
+            const passwordInput = document.getElementById('authPassword').value.trim();
+
+            if (usernameInput === SECURE_LOGIN && passwordInput === SECURE_PASSWORD) {
+                sessionStorage.setItem('isAdminAuthenticated', 'true');
+                if (authModal) authModal.classList.add('hidden');
+                document.body.classList.remove('auth-locked');
+                
+                loadAdminMenu();
+            } else {
+                alert('Неверный логин или пароль!');
+                document.getElementById('authPassword').value = '';
+            }
+        });
+    }
+
+    checkAdminAuth();
 });
+
+window.logoutAdmin = function() {
+    if (confirm('Вы уверены, что хотите выйти?')) {
+        sessionStorage.removeItem('isAdminAuthenticated');
+        window.location.reload();
+    }
+}

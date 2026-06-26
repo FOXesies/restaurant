@@ -118,16 +118,62 @@ nav {
 .promo-card p { color: var(--text-muted); font-size: 13px; }
 
 /* ─── POPULAR & MENU ─── */
-#popular { padding: 80px 48px; background: var(--black); }
-.dishes-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 24px; margin-bottom: 40px; }
-.dish-card { background: var(--dark); overflow: hidden; }
-.dish-card:hover .dish-img { transform: scale(1.05); }
-.dish-img-wrap { overflow: hidden; height: 200px; }
-.dish-img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
-.dish-info { padding: 16px; }
-.dish-info h4 { font-family: var(--font-display); font-size: 15px; margin-bottom: 6px; }
-.dish-info p { font-size: 11px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.6; }
-.dish-price { color: var(--gold); font-size: 15px; font-weight: 600; }
+#popular { 
+    padding: 80px 48px; 
+    background: var(--black); 
+}
+
+.dishes-grid { 
+    display: grid; 
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 24px; 
+    margin-bottom: 40px; 
+}
+
+.dish-card { 
+    background: var(--dark); 
+    overflow: hidden; 
+    width: 100%; /* Карточка гарантированно займет всю ширину своей колонки */
+}
+
+.dish-card:hover .dish-img { 
+    transform: scale(1.05); 
+}
+
+.dish-img-wrap { 
+    overflow: hidden; 
+    height: 200px; 
+}
+
+.dish-img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+    transition: transform .4s; 
+}
+
+.dish-info { 
+    padding: 16px; 
+}
+
+.dish-info h4 { 
+    font-family: var(--font-display); 
+    font-size: 15px; 
+    margin-bottom: 6px; 
+}
+
+.dish-info p { 
+    font-size: 11px; 
+    color: var(--text-muted); 
+    margin-bottom: 12px; 
+    line-height: 1.6; 
+}
+
+.dish-price { 
+    color: var(--gold); 
+    font-size: 15px; 
+    font-weight: 600; 
+}
 
 .btn-outline { display: block; width: fit-content; margin: 0 auto; border: 1px solid var(--gold); color: var(--gold); background: none; padding: 12px 32px; font-family: var(--font-body); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all .2s; }
 .btn-outline:hover { background: var(--gold); color: var(--black); }
@@ -183,7 +229,24 @@ nav {
 .contacts-map iframe { width: 100%; height: 100%; border: none; filter: invert(90%) hue-rotate(180deg); }
 
 /* ─── FOOTER ─── */
-footer { display: flex; justify-content: space-between; align-items: center; padding: 40px 48px; background: #0a0a0a; border-top: 1px solid #111; font-size: 12px; color: var(--text-muted); }
+footer { 
+    background: #0a0a0a; 
+    border-top: 1px solid #111; 
+    font-size: 12px; 
+    color: var(--text-muted); 
+
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    
+    /* Сбрасываем флекс-эффекты родителя, если они заставляли футер сжиматься */
+    display: block !important; 
+    
+    /* Делаем красивую мобильную верстку */
+    text-align: center !important; /* Текст будет аккуратно по центру */
+    padding: 25px 15px !important;  /* Внутренние отступы, чтобы текст не лип к краям */
+    margin-top: auto;              /* Прижмет к низу, если контента мало */
+}
 footer a { color: var(--text-muted); text-decoration: none; }
 footer a:hover { color: var(--gold); }
 
@@ -214,6 +277,39 @@ footer a:hover { color: var(--gold); }
   #features, .dishes-grid, .gallery-extended-grid { grid-template-columns: repeat(2, 1fr); }
   #about, .contacts-container, .promo-grid { grid-template-columns: 1fr; }
   #about img { height: 300px; }
+  #popular { 
+        padding: 60px 20px; 
+    }
+
+    .dishes-grid {
+        grid-template-columns: none;    /* Отменяем жесткие десктопные 3 колонки */
+        grid-auto-flow: column;         /* Выстраиваем карточки строго в одну линию вправо */
+        grid-auto-columns: 85%;         /* Каждая карточка на мобилке займет 85% ширины экрана */
+        
+        gap: 16px; 
+        overflow-x: auto;               /* Разрешаем скролл, если карточки выходят за границы */
+        scroll-snap-type: x mandatory;  /* Эффект "магнитного" залипания при прокрутке */
+        -webkit-overflow-scrolling: touch;
+        
+        padding-bottom: 15px;
+        margin-bottom: 25px;
+    }
+
+    .dish-card {
+        scroll-snap-align: start;       /* Точка фиксации карточки при скролле */
+    }
+
+    /* Красивый тонкий скроллбар в стиле твоего сайта */
+    .dishes-grid::-webkit-scrollbar { 
+        height: 4px; 
+    }
+    .dishes-grid::-webkit-scrollbar-track { 
+        background: rgba(255, 255, 255, 0.05); 
+    }
+    .dishes-grid::-webkit-scrollbar-thumb { 
+        background: var(--gold); 
+        border-radius: 10px; 
+    }
 }
 @media (max-width: 768px) {
   .nav-links, .nav-cta { display: none; }

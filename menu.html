@@ -58,18 +58,7 @@
         <h2>Специальные предложения</h2>
         <div class="ornament"><div class="ornament-line"></div>✦<div class="ornament-line"></div></div>
     </div>
-    <div class="promo-grid">
-        <div class="promo-card reveal">
-            <div class="promo-tag">Каждый понедельник</div>
-            <h3>Винный вечер</h3>
-            <p>Скидка 20% на все бутылки из нашей премиальной винной карты при заказе мясного сета.</p>
-        </div>
-        <div class="promo-card reveal">
-            <div class="promo-tag">С 12:00 до 16:00</div>
-            <h3>Итальянский ланч</h3>
-            <p>Специальный сет-меню от шефа (салат, суп и паста на выбор) за фиксированные 1 150 ₽.</p>
-        </div>
-    </div>
+    <div class="promo-grid" id="promoGrid"></div>
 </section>
 
 <section id="menu" class="page-section">
@@ -83,6 +72,7 @@
         <button class="tab" onclick="filterMenu('starters', this)">Закуски</button>
         <button class="tab" onclick="filterMenu('salads', this)">Салаты</button>
         <button class="tab" onclick="filterMenu('mains', this)">Горячее</button>
+        <button class="tab" onclick="filterMenu('drinks', this)">Напитки</button>
     </div>
     <div class="menu-items" id="menuItems">
         </div>
@@ -105,7 +95,7 @@
             <div class="form-row">
                 <div class="form-group">
                     <label>Дата</label>
-                    <input type="date" id="mDate" name="date">
+                    <input type="date" id="mDate" name="date" max="2030-12-31">
                 </div>
                 <div class="form-group">
                     <label>Время</label>

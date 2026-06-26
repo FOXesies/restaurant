@@ -6,13 +6,34 @@
     <title>Панель управления — Belka Vilka</title>
     <link rel="stylesheet" href="admin.css">
 </head>
-<body class="admin-body">
+<body class="admin-body auth-locked"> 
+    <div id="adminAuthModal" class="auth-overlay">
+        <div class="auth-card">
+            <div class="auth-logo">✦ Belka Vilka ✦</div>
+            <h2>Вход в панель управления</h2>
+            
+            <form id="adminLoginForm" autocomplete="off">
+                <div class="auth-group">
+                    <label for="authLogin">Логин</label>
+                    <input type="text" id="authLogin" required placeholder="Введите логин">
+                </div>
+                
+                <div class="auth-group">
+                    <label for="authPassword">Пароль</label>
+                    <input type="password" id="authPassword" required placeholder="Введите пароль">
+                </div>
+                
+                <button type="submit" class="auth-submit-btn">Войти</button>
+            </form>
+        </div>
+    </div>
 
     <h1>Панель управления Belka Vilka</h1>
     
     <div class="tabs-nav">
         <button class="tab-btn active" onclick="switchTab('menu-tab')">🍔 Управление меню</button>
         <button class="tab-btn" onclick="switchTab('reservations-tab')">📅 Заявки на бронь</button>
+        <button class="tab-btn" onclick="switchTab('promotions-tab')">🎁 Специальные предложения</button>
     </div>
 
     <div id="menu-tab" class="tab-content active">
@@ -31,13 +52,14 @@
                     <option value="salads">Салаты (salads)</option>
                     <option value="mains">Горячее (mains)</option>
                     <option value="desserts">Десерты (desserts)</option>
+                    <option value="drinks">Напитки (drinks)</option>
                 </select>
             </div>
 
             <div class="form-group">
                 <label>Название</label>
                 <input type="text" name="name" id="dishNameInput" required maxlength="50" placeholder="Например, Салат Цезарь">
-                <small id="charCounter" class="hint-text">0 / 50 символов</small>
+                <small id="charCounter" class="hint-text">0 / 50 symbols</small>
             </div>
 
             <div class="form-group">
@@ -106,8 +128,8 @@
 
             <div class="filter-group">
                 <label>Дата брони</label>
-                <div style="display: flex; gap: 5px;">
-                    <input type="date" id="filterDate" onchange="applyReservationsFilters()" style="flex: 1;">
+                <div class="date-filter-inline">
+                    <input type="date" id="filterDate" onchange="applyReservationsFilters()">
                     <button type="button" class="clear-date-btn" onclick="clearFilterDate()" title="Сбросить дату">✕</button>
                 </div>
             </div>
@@ -122,6 +144,45 @@
         </div>
 
         <div class="res-list" id="adminReservationsContainer"></div>
+    </div>
+
+    <div id="promotions-tab" class="tab-content">
+        <div class="admin-grid">
+            
+            <div class="form-container">
+                <h2 id="promoFormTitle">Добавить новую акцию</h2>
+                
+                <form id="addPromoForm">
+                    <input type="hidden" id="promoIdInput" value="">
+                    
+                    <div class="form-group">
+                        <label>Верхний тег / Условие (например: КАЖДЫЙ ПОНЕДЕЛЬНИК)</label>
+                        <input type="text" id="promoBadgeInput" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Название акции</label>
+                        <input type="text" id="promoTitleInput" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Описание акции</label>
+                        <textarea id="promoDescInput" required rows="4"></textarea>
+                    </div>
+                    
+                    <div class="btn-container">
+                        <button type="submit" id="promoSubmitBtn">Сохранить акцию</button>
+                        <button type="button" id="cancelPromoEditBtn" style="display: none;">Отмена</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="table-container">
+                <h2>Текущие акции на сайте</h2>
+                <div id="adminPromotionsContainer"></div>
+            </div>
+
+        </div>
     </div>
 
     <script src="admin.js"></script>
