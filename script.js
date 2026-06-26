@@ -561,7 +561,7 @@ async function fetchPopularDishes() {
         container.innerHTML = dishes.map(dish => `
             <div class="dish-card reveal">
                 <div class="dish-img-wrap">
-                    <img class="dish-img" src="${dish.image || 'images/default-dish.jpg'}" alt="${dish.name}">
+                    <img class="dish-img" src="${dish.img || 'images/default-dish.jpg'}" alt="${dish.name}">
                 </div>
                 <div class="dish-info">
                     <h4>${dish.name}</h4>
